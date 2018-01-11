@@ -32,8 +32,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-<link rel="prev" href="4-3-delta-atm-market-convention.html">
-<link rel="next" href="4-5-a-more-refined-approximation-of-the-volatility-smile.html">
+<link rel="prev" href="6-epilogue.html">
+<link rel="next" href="B-bloomberg-training-video.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -177,33 +177,23 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="a-rough-first-pass-on-the-volatility-smile" class="section level2">
-<h2><span class="header-section-number">4.4</span> A rough first pass on the volatility smile</h2>
-<p>In the case of the GBPUSD, the <span class="math inline">\(\Delta_{ATM}\)</span> could be very well approximated by <span class="math inline">\(0.5\)</span>. To check the data, Payne decided to plot of the volatility smile. First, she created the data frame with the information the plot required:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select only the vols for each delta</span>
-list_variables =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;sigma10c&quot;</span>, <span class="st">&quot;sigma25c&quot;</span>, <span class="st">&quot;sigmaatm&quot;</span>, <span class="st">&quot;sigma75c&quot;</span>, <span class="st">&quot;sigma90c&quot;</span>)
-
-<span class="co"># Read the data as a matrix</span>
-vol_data =<span class="st"> </span><span class="kw">t</span>(<span class="kw">as.matrix</span>(<span class="kw">subset</span>(this.data, <span class="dt">select=</span>list_variables)))
-
-<span class="co"># Group the deltas in a vector, to be used in the x-axis</span>
-delta_vector =<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.10</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="fl">0.9</span>)
-
-<span class="co"># Create the data frame for the chart</span>
-vol.smile  =<span class="st"> </span><span class="kw">data.frame</span>(delta_vector, vol_data)   
-<span class="kw">rownames</span>(vol.smile) =<span class="st"> </span><span class="ot">NULL</span>
-<span class="kw">colnames</span>(vol.smile) =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Delta&quot;</span>,<span class="st">&quot;PreBrexit&quot;</span>,<span class="st">&quot;Brexit&quot;</span>,<span class="st">&quot;PostBrexit&quot;</span>)</code></pre></div>
-<p>and used <code>ggplot</code> to create the chart:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(reshape2)
-vol.data =<span class="st"> </span><span class="kw">melt</span>(vol.smile, <span class="dt">id=</span><span class="st">&quot;Delta&quot;</span>)
-<span class="kw">ggplot</span>(<span class="dt">data=</span>vol.data, <span class="kw">aes</span>(<span class="dt">x=</span>Delta, <span class="dt">y=</span>value, <span class="dt">shape=</span>variable)) <span class="op">+</span>
-<span class="st">   </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">colour=</span>variable), <span class="dt">size=</span><span class="dv">4</span>) <span class="op">+</span>
-<span class="st">   </span><span class="kw">labs</span>(<span class="dt">y=</span><span class="st">&quot;vol&quot;</span>)</code></pre></div>
-<div class="figure"><span id="fig:unnamed-chunk-34"></span>
-<img src="images/unnamed-chunk-34-1.png" alt="Rough volatility smiles" width="100%" />
-<p class="caption">
-Figure 4.1: Rough volatility smiles
-</p>
+<div id="paynes-policy-note-box" class="section level1">
+<h1><span class="header-section-number">A</span> Payne’s policy note box</h1>
+<div style="background-color:#d4efdf; width:auto; height:auto; padding-top:0.5px; 
+padding-bottom:5px; padding-left:20px; padding-right:20px; font-size:90%; border:1px solid black">
+<p></br> <font color=#0e6251><strong>Brexit: a FX options post-mortem</strong></font> </br></p>
+<p>Markets reacted strongly to the U.K.vote to leave the European Union in June 2016. Ahead of the vote, the exchange rate had been declining steadily from a peak of 1.7 USD/GBP in mid-2014 to around 1.4 USD/GBP at the beginning of 2016 and held steady at that level during the first half of 2016. In the week following the vote, however, the British pound fell by more than ten percent against the U.S. dollar, reflecting partly concerns about the decline of London as a major financial center.</p>
+<p><img src="images/unnamed-chunk-69-1.png" width="100%" /></p>
+<p>The pound continued weakening during most of 2016, but started gaining ground during most of 2017, rising to about 1.35 USD/GBP in December 2017 from as low as 1.2 USD/GBP in early 2017.</p>
+<p>The strengthening of the pound in late 2017 may actually be hiding weaknesses ahead for the British currency. This is evident from violations in the covered interest parity relationship. By end-2017, the widening differential between the US dollar rate implied in the forward market the US dollar money market rate signals a strong demand for U.S. dollars.</p>
+<p><img src="images/unnamed-chunk-70-1.png" width="100%" /></p>
+<p>The rate differential narrowed and almost vanished earlier in 2017 as the Tories started losing their grip on power which culminated with their loss of a parliamentary majority. Concerns about economic growth prospects in the country, as outlined in the latest <em>Inflation Report</em>, appear to be driving the interest rate differential wider.</p>
+<p>Although the exchange rate did not appear to anticipate the turmoil of the Brexit vote, the FX options market had already started discounting an unfavorable outcome to those in the stay camp. The value of risk reversals, a combination of a short position on a put option with a long position in a call option, is positive if markets are bullish on the pound. When markets are bearish, the risk reversal is negative. Despite the exchange rate fluctuating within a narrow range band, the 3-month 10 <span class="math inline">\(\Delta\)</span> risk reversal contracts showed markets increasingly weighted more large downside movements in the exchange rate than upside movements ahead of the vote.</p>
+<p><img src="images/unnamed-chunk-71-1.png" width="100%" /> The butterfly spread contracts complemented the information from the risk reversal contracts. A positive contract value indicates that the exchange rate is more likely to deviate significantly from its current value. The deviations can be either positive or negative. The 3-month 10 <span class="math inline">\(\Delta\)</span> butterfly spread contracts indicated large movements were expected in early 2016. In combination of the risk reversals, the option markets were revealing increased concerns about the impact of Brexit on the exchange rate.</p>
+<p><img src="images/unnamed-chunk-72-1.png" width="100%" /> The impact of the Brexit vote can be gauged directly from the 3-month exchange rate probability distributions implied from option markets. The red line shows the implied distribution as of January 8, 2016; and the dark cyan line the distribution as of June 24, 2016. The vertical lines show the respective spot exchange rates. The Brexit vote has turned markets increasingly bearish on the British pound and some small but positive weight was assigned to the event that the pound could trade at par with the U.S. dollar.</p>
+<p><img src="images/unnamed-chunk-73-1.png" width="100%" /></p>
+<p>As of December 1, 2017, market sentiment has stabilized as the bearishness faded away as the probability distribution in blue shows. Compared with the pre-Brexit distribution, the market considers that the range of possible exchange rate realizations is narrower. Still, the pound was still trading ten percent below its level just before the Brexit vote, and the violation of covered interest parity justifies increased vigilance.</p>
+<p><img src="images/unnamed-chunk-74-1.png" width="100%" /></p>
 </div>
 </div>
             </section>
@@ -211,8 +201,8 @@ Figure 4.1: Rough volatility smiles
           </div>
         </div>
       </div>
-<a href="4-3-delta-atm-market-convention.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="4-5-a-more-refined-approximation-of-the-volatility-smile.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="6-epilogue.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="B-bloomberg-training-video.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

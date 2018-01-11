@@ -1,0 +1,43 @@
+\contentsline {chapter}{Preface}{5}{chapter*.2}
+\contentsline {section}{Disclaimer}{5}{section*.3}
+\contentsline {section}{Copyright}{6}{section*.4}
+\contentsline {chapter}{\numberline {1}Introduction}{7}{chapter.1}
+\contentsline {section}{\numberline {1.1}Examining the data}{7}{section.1.1}
+\contentsline {section}{\numberline {1.2}Spot exchange rate}{9}{section.1.2}
+\contentsline {section}{\numberline {1.3}Implied and actual USD rates}{10}{section.1.3}
+\contentsline {section}{\numberline {1.4}ATM option volatility}{12}{section.1.4}
+\contentsline {section}{\numberline {1.5}Risk Reversals}{14}{section.1.5}
+\contentsline {section}{\numberline {1.6}Butterfly spreads}{15}{section.1.6}
+\contentsline {chapter}{\numberline {2}A modicum of option pricing theory}{19}{chapter.2}
+\contentsline {section}{\numberline {2.1}The \(\Delta \) of an option}{19}{section.2.1}
+\contentsline {section}{Box 1. \(\Delta \) and dynamic replication}{21}{section*.5}
+\contentsline {section}{\numberline {2.2}Pricing foreign currency options}{23}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}Replicating the cost of a call option}{23}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}The Garman-Kohlhagen equation}{24}{subsection.2.2.2}
+\contentsline {section}{\numberline {2.3}Pricing conventions}{24}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}\(\Delta \)-implied strikes}{24}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Implied volatility}{25}{subsection.2.3.2}
+\contentsline {chapter}{\numberline {3}The volatility smile}{27}{chapter.3}
+\contentsline {section}{Box 2. Put-call parity}{27}{section*.6}
+\contentsline {section}{\numberline {3.1}Level}{28}{section.3.1}
+\contentsline {section}{\numberline {3.2}Slope}{29}{section.3.2}
+\contentsline {section}{\numberline {3.3}Curvature}{29}{section.3.3}
+\contentsline {chapter}{\numberline {4}Constructing the smile}{31}{chapter.4}
+\contentsline {section}{\numberline {4.1}Selecting the data for specific dates}{31}{section.4.1}
+\contentsline {section}{\numberline {4.2}Calculation of implied volatilities (vols)}{32}{section.4.2}
+\contentsline {section}{\numberline {4.3}\(\Delta _{ATM}\) market convention}{33}{section.4.3}
+\contentsline {section}{\numberline {4.4}A rough first pass on the volatility smile}{33}{section.4.4}
+\contentsline {section}{\numberline {4.5}A more refined approximation of the volatility smile}{34}{section.4.5}
+\contentsline {chapter}{\numberline {5}Extracting the risk-neutral density}{37}{chapter.5}
+\contentsline {section}{Box 3. Why market views are risk-neutral and different from forecasts}{37}{section*.7}
+\contentsline {section}{\numberline {5.1}Extraction techniques}{38}{section.5.1}
+\contentsline {section}{\numberline {5.2}Infering premia and strike prices from vols}{39}{section.5.2}
+\contentsline {section}{\numberline {5.3}Generating call option prices}{40}{section.5.3}
+\contentsline {section}{\numberline {5.4}Generating put option prices}{41}{section.5.4}
+\contentsline {section}{\numberline {5.5}Practical Implementation}{41}{section.5.5}
+\contentsline {section}{\numberline {5.6}Generalized beta distribution}{42}{section.5.6}
+\contentsline {section}{\numberline {5.7}Edgeworth expansion}{44}{section.5.7}
+\contentsline {section}{\numberline {5.8}Shimko method}{46}{section.5.8}
+\contentsline {section}{\numberline {5.9}A graphical comparison of different methods}{49}{section.5.9}
+\contentsline {chapter}{\numberline {6}Epilogue}{53}{chapter.6}
+\contentsline {section}{\numberline {6.1}Payne's preliminary box}{53}{section.6.1}

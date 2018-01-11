@@ -32,8 +32,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-<link rel="prev" href="4-3-delta-atm-market-convention.html">
-<link rel="next" href="4-5-a-more-refined-approximation-of-the-volatility-smile.html">
+<link rel="prev" href="A-paynes-policy-note-box.html">
+<link rel="next" href="references.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -177,42 +177,21 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="a-rough-first-pass-on-the-volatility-smile" class="section level2">
-<h2><span class="header-section-number">4.4</span> A rough first pass on the volatility smile</h2>
-<p>In the case of the GBPUSD, the <span class="math inline">\(\Delta_{ATM}\)</span> could be very well approximated by <span class="math inline">\(0.5\)</span>. To check the data, Payne decided to plot of the volatility smile. First, she created the data frame with the information the plot required:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select only the vols for each delta</span>
-list_variables =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;sigma10c&quot;</span>, <span class="st">&quot;sigma25c&quot;</span>, <span class="st">&quot;sigmaatm&quot;</span>, <span class="st">&quot;sigma75c&quot;</span>, <span class="st">&quot;sigma90c&quot;</span>)
+<div id="bloomberg-training-video" class="section level1">
+<h1><span class="header-section-number">B</span> Bloomberg Training Video</h1>
+<p>Bloomberg is one of the main providers of financial data, including price quotes for the FX option contracts discussed in these notes. The video below provides an overview of the FX option functionality available in the Bloomberg terminals, including the rapid generation of volatility smiles and volatility surfaces.</p>
+<iframe src="https://www.youtube.com/embed/wpcvGhYN4eQ" width="672" height="400px">
+</iframe>
+<p><a href="https://youtu.be/wpcvGhYN4eQ" class="uri">https://youtu.be/wpcvGhYN4eQ</a></p>
 
-<span class="co"># Read the data as a matrix</span>
-vol_data =<span class="st"> </span><span class="kw">t</span>(<span class="kw">as.matrix</span>(<span class="kw">subset</span>(this.data, <span class="dt">select=</span>list_variables)))
-
-<span class="co"># Group the deltas in a vector, to be used in the x-axis</span>
-delta_vector =<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.10</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="fl">0.9</span>)
-
-<span class="co"># Create the data frame for the chart</span>
-vol.smile  =<span class="st"> </span><span class="kw">data.frame</span>(delta_vector, vol_data)   
-<span class="kw">rownames</span>(vol.smile) =<span class="st"> </span><span class="ot">NULL</span>
-<span class="kw">colnames</span>(vol.smile) =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Delta&quot;</span>,<span class="st">&quot;PreBrexit&quot;</span>,<span class="st">&quot;Brexit&quot;</span>,<span class="st">&quot;PostBrexit&quot;</span>)</code></pre></div>
-<p>and used <code>ggplot</code> to create the chart:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(reshape2)
-vol.data =<span class="st"> </span><span class="kw">melt</span>(vol.smile, <span class="dt">id=</span><span class="st">&quot;Delta&quot;</span>)
-<span class="kw">ggplot</span>(<span class="dt">data=</span>vol.data, <span class="kw">aes</span>(<span class="dt">x=</span>Delta, <span class="dt">y=</span>value, <span class="dt">shape=</span>variable)) <span class="op">+</span>
-<span class="st">   </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">colour=</span>variable), <span class="dt">size=</span><span class="dv">4</span>) <span class="op">+</span>
-<span class="st">   </span><span class="kw">labs</span>(<span class="dt">y=</span><span class="st">&quot;vol&quot;</span>)</code></pre></div>
-<div class="figure"><span id="fig:unnamed-chunk-34"></span>
-<img src="images/unnamed-chunk-34-1.png" alt="Rough volatility smiles" width="100%" />
-<p class="caption">
-Figure 4.1: Rough volatility smiles
-</p>
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="4-3-delta-atm-market-convention.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="4-5-a-more-refined-approximation-of-the-volatility-smile.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="A-paynes-policy-note-box.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
