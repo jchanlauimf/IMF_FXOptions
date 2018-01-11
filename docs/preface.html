@@ -5,24 +5,24 @@
 
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Adventures in MacroFinancial Analysis: Extracting information from FX Options</title>
-  <meta name="description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook.">
+  <title>Adventures in Macrofinancial Analysis: Extracting information from FX Options</title>
+  <meta name="description" content="Lecture notes on information extraction from FX options">
   <meta name="generator" content="bookdown 0.5 and GitBook 2.6.7">
 
-  <meta property="og:title" content="Adventures in MacroFinancial Analysis: Extracting information from FX Options" />
+  <meta property="og:title" content="Adventures in Macrofinancial Analysis: Extracting information from FX Options" />
   <meta property="og:type" content="book" />
   
-  
-  <meta property="og:description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
+  <meta property="og:image" content="cover_page.png" />
+  <meta property="og:description" content="Lecture notes on information extraction from FX options" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Adventures in MacroFinancial Analysis: Extracting information from FX Options" />
+  <meta name="twitter:title" content="Adventures in Macrofinancial Analysis: Extracting information from FX Options" />
   
-  <meta name="twitter:description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
-  
+  <meta name="twitter:description" content="Lecture notes on information extraction from FX options" />
+  <meta name="twitter:image" content="cover_page.png" />
 
-<meta name="author" content="Jorge A. Chan-Lau">
+<meta name="author" content="Jorge A. Chan-Lau  International Monetary Fund and  Credit Research Initiative, National University of Singapore">
 
 
 <meta name="date" content="2018-01-10">
@@ -32,7 +32,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-<link rel="prev" href="index.html">
+<link rel="prev" href="copyright.html">
 <link rel="next" href="1-intro.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -53,38 +53,41 @@
 div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #ffffff; color: #1f1c1b; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #ffffff; color: #a0a0a0; border-right: 1px solid #a0a0a0; }
 td.sourceCode { padding-left: 5px; }
-pre, code { background-color: #f8f8f8; }
-code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
-code > span.dt { color: #204a87; } /* DataType */
-code > span.dv { color: #0000cf; } /* DecVal */
-code > span.bn { color: #0000cf; } /* BaseN */
-code > span.fl { color: #0000cf; } /* Float */
-code > span.ch { color: #4e9a06; } /* Char */
-code > span.st { color: #4e9a06; } /* String */
-code > span.co { color: #8f5902; font-style: italic; } /* Comment */
-code > span.ot { color: #8f5902; } /* Other */
-code > span.al { color: #ef2929; } /* Alert */
-code > span.fu { color: #000000; } /* Function */
-code > span.er { color: #a40000; font-weight: bold; } /* Error */
-code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #000000; } /* Constant */
-code > span.sc { color: #000000; } /* SpecialChar */
-code > span.vs { color: #4e9a06; } /* VerbatimString */
-code > span.ss { color: #4e9a06; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #000000; } /* Variable */
-code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
-code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
-code > span.ex { } /* Extension */
-code > span.at { color: #c4a000; } /* Attribute */
-code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
-code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+pre, code { color: #1f1c1b; background-color: #ffffff; }
+code > span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code > span.dt { color: #0057ae; } /* DataType */
+code > span.dv { color: #b08000; } /* DecVal */
+code > span.bn { color: #b08000; } /* BaseN */
+code > span.fl { color: #b08000; } /* Float */
+code > span.cn { color: #aa5500; } /* Constant */
+code > span.ch { color: #924c9d; } /* Char */
+code > span.sc { color: #3daee9; } /* SpecialChar */
+code > span.st { color: #bf0303; } /* String */
+code > span.vs { color: #bf0303; } /* VerbatimString */
+code > span.ss { color: #ff5500; } /* SpecialString */
+code > span.im { color: #ff5500; } /* Import */
+code > span.co { color: #898887; } /* Comment */
+code > span.do { color: #607880; } /* Documentation */
+code > span.an { color: #ca60ca; } /* Annotation */
+code > span.cv { color: #0095ff; } /* CommentVar */
+code > span.ot { color: #006e28; } /* Other */
+code > span.fu { color: #644a9b; } /* Function */
+code > span.va { color: #0057ae; } /* Variable */
+code > span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #1f1c1b; } /* Operator */
+code > span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code > span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code > span.pp { color: #006e28; } /* Preprocessor */
+code > span.at { color: #0057ae; } /* Attribute */
+code > span.re { color: #0057ae; } /* RegionMarker */
+code > span.in { color: #b08000; } /* Information */
+code > span.wa { color: #bf0303; } /* Warning */
+code > span.al { color: #bf0303; font-weight: bold; } /* Alert */
+code > span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code > span. { color: #1f1c1b; } /* Normal */
 </style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
@@ -100,7 +103,13 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="index.html#section"></a></li>
+<li><a href="https://jchanlauimf.github.io/IMF_FXOptions/">Extracting information from FX options</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Cover page</a><ul>
+<li class="chapter" data-level="" data-path="disclaimer.html"><a href="disclaimer.html"><i class="fa fa-check"></i>Disclaimer</a></li>
+<li class="chapter" data-level="" data-path="copyright.html"><a href="copyright.html"><i class="fa fa-check"></i>Copyright</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a></li>
 <li class="chapter" data-level="1" data-path="1-intro.html"><a href="1-intro.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
 <li class="chapter" data-level="1.1" data-path="1-1-Data-exploration.html"><a href="1-1-Data-exploration.html"><i class="fa fa-check"></i><b>1.1</b> Examining the data</a></li>
@@ -109,12 +118,10 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="1.4" data-path="1-4-atm-option-volatility.html"><a href="1-4-atm-option-volatility.html"><i class="fa fa-check"></i><b>1.4</b> ATM option volatility</a></li>
 <li class="chapter" data-level="1.5" data-path="1-5-risk-reversals.html"><a href="1-5-risk-reversals.html"><i class="fa fa-check"></i><b>1.5</b> Risk Reversals</a></li>
 <li class="chapter" data-level="1.6" data-path="1-6-butterfly-spreads.html"><a href="1-6-butterfly-spreads.html"><i class="fa fa-check"></i><b>1.6</b> Butterfly spreads</a></li>
-<li class="chapter" data-level="1.7" data-path="1-7-original-file.html"><a href="1-7-original-file.html"><i class="fa fa-check"></i><b>1.7</b> Original file</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="2-a-modicum-of-option-pricing-theory.html"><a href="2-a-modicum-of-option-pricing-theory.html"><i class="fa fa-check"></i><b>2</b> A modicum of option pricing theory</a><ul>
-<li class="chapter" data-level="2.1" data-path="2-1-the-delta-of-an-option.html"><a href="2-1-the-delta-of-an-option.html"><i class="fa fa-check"></i><b>2.1</b> The <span class="math inline">\(\Delta\)</span> of an option</a><ul>
-<li><a href="2-1-the-delta-of-an-option.html#box-1.-delta-and-dynamic-replication">Box 1. <span class="math inline">\(\Delta\)</span> and dynamic replication</a></li>
-</ul></li>
+<li class="chapter" data-level="2.1" data-path="2-1-the-delta-of-an-option.html"><a href="2-1-the-delta-of-an-option.html"><i class="fa fa-check"></i><b>2.1</b> The <span class="math inline">\(\Delta\)</span> of an option</a></li>
+<li><a href="box-1-delta-and-dynamic-replication.html#box-1.-delta-and-dynamic-replication">Box 1. <span class="math inline">\(\Delta\)</span> and dynamic replication</a></li>
 <li class="chapter" data-level="2.2" data-path="2-2-pricing-foreign-currency-options.html"><a href="2-2-pricing-foreign-currency-options.html"><i class="fa fa-check"></i><b>2.2</b> Pricing foreign currency options</a><ul>
 <li class="chapter" data-level="2.2.1" data-path="2-2-pricing-foreign-currency-options.html"><a href="2-2-pricing-foreign-currency-options.html#replicating-the-cost-of-a-call-option"><i class="fa fa-check"></i><b>2.2.1</b> Replicating the cost of a call option</a></li>
 <li class="chapter" data-level="2.2.2" data-path="2-2-pricing-foreign-currency-options.html"><a href="2-2-pricing-foreign-currency-options.html#the-garman-kohlhagen-equation"><i class="fa fa-check"></i><b>2.2.2</b> The Garman-Kohlhagen equation</a></li>
@@ -125,7 +132,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="3-the-volatility-smile.html"><a href="3-the-volatility-smile.html"><i class="fa fa-check"></i><b>3</b> The volatility smile</a><ul>
-<li class="chapter" data-level="" data-path="3-the-volatility-smile.html"><a href="3-the-volatility-smile.html#box-2.-put-call-parity"><i class="fa fa-check"></i>Box 2. Put-call parity</a></li>
+<li class="chapter" data-level="" data-path="box-2-put-call-parity.html"><a href="box-2-put-call-parity.html"><i class="fa fa-check"></i>Box 2. Put-call parity</a></li>
 <li class="chapter" data-level="3.1" data-path="3-1-level.html"><a href="3-1-level.html"><i class="fa fa-check"></i><b>3.1</b> Level</a></li>
 <li class="chapter" data-level="3.2" data-path="3-2-slope.html"><a href="3-2-slope.html"><i class="fa fa-check"></i><b>3.2</b> Slope</a></li>
 <li class="chapter" data-level="3.3" data-path="3-3-curvature.html"><a href="3-3-curvature.html"><i class="fa fa-check"></i><b>3.3</b> Curvature</a></li>
@@ -137,19 +144,35 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="3.4.5" data-path="3-4-constructing-the-volatility-smile.html"><a href="3-4-constructing-the-volatility-smile.html#a-more-refined-approximation-of-the-volatility-smile"><i class="fa fa-check"></i><b>3.4.5</b> A more refined approximation of the volatility smile</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="4-extracting-the-risk-neutral-density.html"><a href="4-extracting-the-risk-neutral-density.html"><i class="fa fa-check"></i><b>4</b> Extracting the risk-neutral density</a><ul>
-<li class="chapter" data-level="4.1" data-path="4-1-extraction-techniques.html"><a href="4-1-extraction-techniques.html"><i class="fa fa-check"></i><b>4.1</b> Extraction techniques</a></li>
-<li class="chapter" data-level="4.2" data-path="4-2-infering-premia-and-strike-prices-from-the-volatility-smile.html"><a href="4-2-infering-premia-and-strike-prices-from-the-volatility-smile.html"><i class="fa fa-check"></i><b>4.2</b> Infering premia and strike prices from the volatility smile</a></li>
-<li class="chapter" data-level="4.3" data-path="4-3-the-call-option-case.html"><a href="4-3-the-call-option-case.html"><i class="fa fa-check"></i><b>4.3</b> The call option case</a></li>
-<li class="chapter" data-level="4.4" data-path="4-4-the-put-option-case.html"><a href="4-4-the-put-option-case.html"><i class="fa fa-check"></i><b>4.4</b> The put option case</a></li>
-<li class="chapter" data-level="4.5" data-path="4-5-practical-implementation.html"><a href="4-5-practical-implementation.html"><i class="fa fa-check"></i><b>4.5</b> Practical Implementation</a></li>
-<li class="chapter" data-level="4.6" data-path="4-6-generalized-beta-distribution14.html"><a href="4-6-generalized-beta-distribution14.html"><i class="fa fa-check"></i><b>4.6</b> Generalized beta distribution[^14]</a></li>
-<li class="chapter" data-level="4.7" data-path="4-7-edgeworth-expansion.html"><a href="4-7-edgeworth-expansion.html"><i class="fa fa-check"></i><b>4.7</b> Edgeworth expansion</a></li>
-<li class="chapter" data-level="4.8" data-path="4-8-shimko-method16.html"><a href="4-8-shimko-method16.html"><i class="fa fa-check"></i><b>4.8</b> Shimko method[^16]</a></li>
-<li class="chapter" data-level="4.9" data-path="4-9-a-graphical-comparison-of-different-methods.html"><a href="4-9-a-graphical-comparison-of-different-methods.html"><i class="fa fa-check"></i><b>4.9</b> A graphical comparison of different methods</a></li>
+<li class="chapter" data-level="4" data-path="4-the-volatility-smile-1.html"><a href="4-the-volatility-smile-1.html"><i class="fa fa-check"></i><b>4</b> The volatility smile</a><ul>
+<li class="chapter" data-level="" data-path="4-the-volatility-smile-1.html"><a href="4-the-volatility-smile-1.html#box-2.-put-call-parity-1"><i class="fa fa-check"></i>Box 2. Put-call parity</a></li>
+<li class="chapter" data-level="4.1" data-path="4-1-level-1.html"><a href="4-1-level-1.html"><i class="fa fa-check"></i><b>4.1</b> Level</a></li>
+<li class="chapter" data-level="4.2" data-path="4-2-slope-1.html"><a href="4-2-slope-1.html"><i class="fa fa-check"></i><b>4.2</b> Slope</a></li>
+<li class="chapter" data-level="4.3" data-path="4-3-curvature-1.html"><a href="4-3-curvature-1.html"><i class="fa fa-check"></i><b>4.3</b> Curvature</a></li>
+<li class="chapter" data-level="4.4" data-path="4-4-constructing-the-volatility-smile-1.html"><a href="4-4-constructing-the-volatility-smile-1.html"><i class="fa fa-check"></i><b>4.4</b> Constructing the volatility smile</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="4-4-constructing-the-volatility-smile-1.html"><a href="4-4-constructing-the-volatility-smile-1.html#selecting-the-data-for-specific-dates-1"><i class="fa fa-check"></i><b>4.4.1</b> Selecting the data for specific dates</a></li>
+<li class="chapter" data-level="4.4.2" data-path="4-4-constructing-the-volatility-smile-1.html"><a href="4-4-constructing-the-volatility-smile-1.html#calculation-of-implied-volatilities-vols-1"><i class="fa fa-check"></i><b>4.4.2</b> Calculation of implied volatilities (vols)</a></li>
+<li class="chapter" data-level="4.4.3" data-path="4-4-constructing-the-volatility-smile-1.html"><a href="4-4-constructing-the-volatility-smile-1.html#delta_atm-depends-on-the-atm-conventions-used-1"><i class="fa fa-check"></i><b>4.4.3</b> <span class="math inline">\(\Delta_{ATM}\)</span> depends on the ATM conventions used</a></li>
+<li class="chapter" data-level="4.4.4" data-path="4-4-constructing-the-volatility-smile-1.html"><a href="4-4-constructing-the-volatility-smile-1.html#a-rough-first-pass-on-the-volatility-smile-1"><i class="fa fa-check"></i><b>4.4.4</b> A rough first pass on the volatility smile</a></li>
+<li class="chapter" data-level="4.4.5" data-path="4-4-constructing-the-volatility-smile-1.html"><a href="4-4-constructing-the-volatility-smile-1.html#a-more-refined-approximation-of-the-volatility-smile-1"><i class="fa fa-check"></i><b>4.4.5</b> A more refined approximation of the volatility smile</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="5-final-words.html"><a href="5-final-words.html"><i class="fa fa-check"></i><b>5</b> Final Words</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="5-extracting-the-risk-neutral-density.html"><a href="5-extracting-the-risk-neutral-density.html"><i class="fa fa-check"></i><b>5</b> Extracting the risk-neutral density</a><ul>
+<li class="chapter" data-level="5.1" data-path="5-1-extraction-techniques.html"><a href="5-1-extraction-techniques.html"><i class="fa fa-check"></i><b>5.1</b> Extraction techniques</a></li>
+<li class="chapter" data-level="5.2" data-path="5-2-infering-premia-and-strike-prices-from-the-volatility-smile.html"><a href="5-2-infering-premia-and-strike-prices-from-the-volatility-smile.html"><i class="fa fa-check"></i><b>5.2</b> Infering premia and strike prices from the volatility smile</a></li>
+<li class="chapter" data-level="5.3" data-path="5-3-the-call-option-case.html"><a href="5-3-the-call-option-case.html"><i class="fa fa-check"></i><b>5.3</b> The call option case</a></li>
+<li class="chapter" data-level="5.4" data-path="5-4-the-put-option-case.html"><a href="5-4-the-put-option-case.html"><i class="fa fa-check"></i><b>5.4</b> The put option case</a></li>
+<li class="chapter" data-level="5.5" data-path="5-5-practical-implementation.html"><a href="5-5-practical-implementation.html"><i class="fa fa-check"></i><b>5.5</b> Practical Implementation</a></li>
+<li class="chapter" data-level="5.6" data-path="5-6-generalized-beta-distribution.html"><a href="5-6-generalized-beta-distribution.html"><i class="fa fa-check"></i><b>5.6</b> Generalized beta distribution</a></li>
+<li class="chapter" data-level="5.7" data-path="5-7-edgeworth-expansion.html"><a href="5-7-edgeworth-expansion.html"><i class="fa fa-check"></i><b>5.7</b> Edgeworth expansion</a></li>
+<li class="chapter" data-level="5.8" data-path="5-8-shimko-method.html"><a href="5-8-shimko-method.html"><i class="fa fa-check"></i><b>5.8</b> Shimko method</a></li>
+<li class="chapter" data-level="5.9" data-path="5-9-a-graphical-comparison-of-different-methods.html"><a href="5-9-a-graphical-comparison-of-different-methods.html"><i class="fa fa-check"></i><b>5.9</b> A graphical comparison of different methods</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="6-final-words.html"><a href="6-final-words.html"><i class="fa fa-check"></i><b>6</b> Final Words</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
 </ul>
 
       </nav>
@@ -159,7 +182,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Adventures in MacroFinancial Analysis: Extracting information from FX Options</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Adventures in Macrofinancial Analysis:</br> Extracting information from FX Options</a>
           </h1>
         </div>
 
@@ -169,19 +192,47 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
             <section class="normal" id="section-">
 <div id="preface" class="section level1 unnumbered">
 <h1>Preface</h1>
-<p>This is a <em>sample</em> book written in <strong>Markdown</strong>. You can use anything that Pandoc’s Markdown supports, e.g., a math equation <span class="math inline">\(a^2 + b^2 = c^2\)</span>.</p>
-<p>For now, you have to install the development versions of <strong>bookdown</strong> from Github:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;rstudio/bookdown&quot;</span>)</code></pre></div>
-<p>Remember each Rmd file contains one and only one chapter, and a chapter is defined by the first-level heading <code>#</code>.</p>
-<p>To compile this example to PDF, you need to install XeLaTeX.</p>
+<p>This set of lecture notes has been developed for short hands-on training courses on information extraction from foreign exchange (FX) options, namely reverse engineering option price quotes to obtain the market views on the probability distribution of the exchange rate.</p>
+<p>The main target audience are economists and analysts with a working understanding of econometric and quantitative methods as well as some basic familiarity with option pricing. Attending to the needs of this audience, the notes keep the mathematics and theory light and emphasize understanding the intuition behind pricing conventions, option valuation theory, and the numerical methods.</p>
+<p>By design, the topics are presented in a light-hearted manner, a useful technique I learned from the late Salih Neftci during the numerous courses he delivered at the International Monetary Fund in the mid-2000s. A cheerful and playful state of mind certainly works wonders for absorbing the myriad of concepts these notes present in a rather compressed way. Some attentive readers may note that the main title for these series of notes, <em>Adventures in Macrofinancial Analysis</em>, is a shameless steal of the title of Sidney Resnick’s awesome book on stochastic processes <span class="citation">(Resnick <a href="#ref-Resnick1992">1992</a>)</span>.</p>
+<p>Reverse engineering security prices is mainly a numerical computation task. All calculations are performed using <code>R</code> <span class="citation">(R Core Team <a href="#ref-R-base">2017</a>)</span>, executed within the <code>RStudio</code> IDE <span class="citation">(RStudio Team <a href="#ref-R-RStudio">2015</a>)</span>. The <code>R</code> software environment rapidly incorporates state-of-the-art methods. Equally important, it allows integrating calculations and reporting, turning the notes into an easy-to-update dynamic document following the best practices of reproducible research (<span class="citation">Xie (<a href="#ref-xie2015">2015</a>)</span> and <span class="citation">Gandrud (<a href="#ref-Gandrud2015">2015</a>)</span>).</p>
+<p>Rather than implementing the extraction methods from scratch, the calculations take advantage of the <code>RND</code> package <span class="citation">(Hamidieh <a href="#ref-R-RND">2017</a>)</span>. One advantage of using the package is that the methods it implements are useful for a wide variety of options, not only FX options.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
+<p>Feedback from course participants helps to keep these notes current. Your comments and suggestions are always welcome, please direct them to <a href="mailto:jchanlauimf@gmail.com">jchanlauimf@gmail.com</a>, with subject topic <em>Lecture notes on FX options</em>.</p>
 
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-Resnick1992">
+<p>Resnick, Sidney. 1992. <em>Adventures in Stochastic Processes</em>. Birkhauser.</p>
+</div>
+<div id="ref-R-base">
+<p>R Core Team. 2017. <em>R: A Language and Environment for Statistical Computing</em>. Vienna, Austria: R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>.</p>
+</div>
+<div id="ref-R-RStudio">
+<p>RStudio Team. 2015. <em>RStudio: Integrated Development for R</em>. RStudio, Inc., Boston, MA. <a href="https://www.rstudio.com/" class="uri">https://www.rstudio.com/</a>.</p>
+</div>
+<div id="ref-xie2015">
+<p>Xie, Yihui. 2015. <em>Dynamic Documents with R and Knitr</em>. 2nd ed. Boca Raton, Florida: Chapman; Hall/CRC. <a href="http://yihui.name/knitr/" class="uri">http://yihui.name/knitr/</a>.</p>
+</div>
+<div id="ref-Gandrud2015">
+<p>Gandrud, Christopher. 2015. <em>Reproducible Research with R and R Studio</em>. The R Series. Chapman &amp; Hall/CRC.</p>
+</div>
+<div id="ref-R-RND">
+<p>Hamidieh, Kam. 2017. <em>RND: Risk Neutral Density Extraction Package</em>. <a href="https://cran.r-project.org/web/packages/RND/index.html" class="uri">https://cran.r-project.org/web/packages/RND/index.html</a>.</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="1">
+<li id="fn1"><p>Readers interested in extraction methods specialized for FX options and associated <code>Matlab</code> codes could look at <span class="citation">Blake and Rule (<a href="#ref-Blake-Rule2015">2015</a>)</span>.<a href="preface.html#fnref1">↩</a></p></li>
+</ol>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="copyright.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 <a href="1-intro.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
