@@ -1,0 +1,92 @@
+# Epilogue
+
+With all calculations ready, it was time for Payne to wrap up its analysis and to propose a small text box for the U.K. policy note. Once it was ready, she send the draft to her manager, F.L. Atterman. Atterman considered the box could be included in the note once Payne took on board his editorial suggestions. It was not a bad outcome at all. Atterman also suggested Payne to attempt to incorporate the FX option information in a forecasting model. Payne wrote a note to enroll in the internal forecasting courses offered by the Internal Cognitive Development (ICD) department. 
+
+While walking back to her office Payne crossed paths with Huff. Although he waved at her, she completely ignored him. "No loss at all, as the old man is no longer of any use," thought Payne. Her mind was already busy strategizing on whom her coffee money and her time was better spent in order to advance her career prospects.
+
+## Payne's preliminary box
+
+<div style = "background-color:#d4efdf; width:auto; height:auto; padding-top:0.5px; 
+padding-bottom:5px; padding-left:20px; padding-right:20px; font-size:90%; border:1px solid black">
+</br>
+<font color=#0e6251>**Brexit: a FX options post-mortem**</font>
+</br>
+
+Markets reacted strongly to the U.K.vote to leave the European Union in June 2016. Ahead of the vote, the exchange rate had been declining steadily from a peak of 1.7 USD/GBP in mid-2014 to around 1.4 USD/GBP at the beginning of 2016 and held steady at that level during the first half of 2016. In the week following the vote, however, the British pound fell by more than ten percent against the U.S. dollar, reflecting partly concerns about the decline of London as a major financial center. 
+
+```{r echo=FALSE, fig.asp=0.3, message=FALSE, warning=FALSE, out.width="100%", paged.print=FALSE}
+
+library(ggplot2)          # Graphic library
+library(lubridate)        # Date manipulation library
+library(dplyr)            # Auxiliary functions for data manipulation
+source("auxFunctions.R")  # Auxiliary functions for this chapter
+filename = "2018_IET_Options_data.csv"
+data = read.csv(filename, header=TRUE)
+data$Dates = mdy_hm(as.character(data$Dates))
+ggplot(data, aes(Dates, Spot)) + geom_line(colour="red") +
+  geom_vline(xintercept=as.POSIXct(as.Date(("2016-06-22 UTC"))),linetype="longdash") +
+  labs(x="", y="USD/GBP")
+
+```
+
+The pound continued weakening during most of 2016, but started gaining ground during most of 2017, rising to about 1.35 USD/GBP in December 2017 from as low as 1.2 USD/GBP in early 2017. 
+
+The strengthening of the pound in late 2017 may actually be hiding weaknesses ahead for the British currency. This is evident from violations in the covered interest parity relationship. By end-2017, the widening differential between the US dollar rate implied in the forward market the US dollar money market rate signals a strong demand for U.S. dollars. 
+
+```{r echo=FALSE, fig.asp=0.3, message=FALSE, warning=FALSE, out.width="100%", paged.print=FALSE}
+data$spreadRd = (data$ImpliedRd - data$Rd)*100
+ggplot(data, aes(Dates, spreadRd)) + geom_line(colour="purple") + 
+  geom_hline(yintercept=0) + 
+  geom_vline(xintercept=as.POSIXct(as.Date(("2016-06-22 UTC"))),linetype="longdash") +
+  labs(x="",y="USD rate differential")
+```
+
+The rate differential narrowed and almost vanished earlier in 2017 as the Tories started losing their grip on power which culminated with their loss of a parliamentary majority. Concerns about economic growth prospects in the country, as outlined in the latest _Inflation Report_, appear to be driving the interest rate differential wider.
+
+Although the exchange rate did not appear to anticipate the turmoil of the Brexit vote, the FX options market had already started discounting an unfavorable outcome to those in the stay camp. The value of risk reversals, a combination of a short position on a put option with a long position in a call option, is positive if markets are bullish on the pound. When markets are bearish, the risk reversal is negative. Despite the exchange rate fluctuating within a narrow range band, the 3-month 10 $\Delta$ risk reversal contracts showed markets increasingly weighted more large downside movements in the exchange rate than upside movements ahead of the vote.
+
+
+```{r echo=FALSE, fig.asp=0.3, message=FALSE, warning=FALSE, out.width="100%", paged.print=FALSE}
+ggplot(data, aes(Dates, RR10D3M)) + geom_line(colour="red") + geom_hline(yintercept=0) +
+  geom_vline(xintercept=as.POSIXct(as.Date(("2016-06-22 UTC"))),linetype="longdash") 
+
+```
+The butterfly spread contracts complemented the information from the risk reversal contracts. A positive contract value indicates that the exchange rate is more likely to deviate significantly from its current value. The deviations can be either positive or negative. The 3-month 10 $\Delta$ butterfly spread contracts indicated large movements were expected in early 2016. In combination of the risk reversals, the option markets were revealing increased concerns about the impact of Brexit on the exchange rate.
+
+```{r echo=FALSE, fig.asp=0.3, message=FALSE, warning=FALSE, out.width="100%", paged.print=FALSE}
+
+ggplot(data, aes(Dates, BF10D3M)) + geom_line(colour="blue") + geom_hline(yintercept=0) + 
+  geom_vline(xintercept=as.POSIXct(as.Date(("2016-06-22 UTC"))),linetype="longdash")
+
+```
+The impact of the Brexit vote can be gauged directly from the 3-month exchange rate probability distributions implied from option markets. The red line shows the implied distribution as of January 8, 2016; and the dark cyan line the distribution as of June 24, 2016. The vertical lines show the respective spot exchange rates. The Brexit vote has turned markets increasingly bearish on the British pound and some small but positive weight was assigned to the event that the pound could trade at par with the U.S. dollar.
+
+```{r echo=FALSE, fig.asp=0.4, message=FALSE, warning=FALSE, out.width="100%", paged.print=FALSE}
+
+library(RND)
+
+gb.rnd.df = data.frame(Krange,gb.rnd.preBrexit, gb.rnd.Brexit, gb.rnd.postBrexit)
+
+ggplot(data=gb.rnd.df, aes(x=Krange)) + geom_line(aes(y=gb.rnd.preBrexit), col="red", size=1.25) +
+  geom_line(aes(y=gb.rnd.Brexit), col="darkcyan", size=1.25) +
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  labs(x="GBPUSD", y="3-month risk-neutral density") 
+```
+
+As of December 1, 2017, market sentiment has stabilized as the bearishness faded away as the probability distribution in blue shows. Compared with the pre-Brexit distribution, the market considers that the range of possible exchange rate realizations is narrower. Still, the pound was still trading ten percent below its level just before the Brexit vote, and the violation of covered interest parity justifies increased vigilance.
+
+```{r echo=FALSE, fig.asp=0.4, message=FALSE, warning=FALSE, out.width="100%", paged.print=FALSE}
+
+ggplot(data=gb.rnd.df, aes(x=Krange)) + geom_line(aes(y=gb.rnd.preBrexit), col="red", size=1.25) +
+  geom_line(aes(y=gb.rnd.Brexit), col="darkcyan", size=1.25) +
+  geom_line(aes(y=gb.rnd.postBrexit), col="blue", size=1.25) +
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  geom_vline(xintercept = spot[3], col="blue", linetype="longdash") +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density")  
+```
+
+</div>
+
