@@ -2,9 +2,11 @@
 
 With all calculations ready, it was time for Payne to wrap up its analysis and to propose a small text box for the U.K. policy note. Once it was ready, she send the draft to her manager, F.L. Atterman. Atterman considered the box could be included in the note once Payne took on board his editorial suggestions. It was not a bad outcome at all. Atterman also suggested Payne to attempt to incorporate the FX option information in a forecasting model. Payne wrote a note to enroll in the internal forecasting courses offered by the Internal Cognitive Development (ICD) department. 
 
-While walking back to her office Payne crossed paths with Huff. Although he waved at her, she completely ignored him. "No loss at all, as the old man is no longer of any use," thought Payne. Her mind was already busy strategizing on whom her coffee money and her time was better spent in order to advance her career prospects.
+While walking back to her office Payne crossed paths with Huff. Although he waved at her, she completely ignored him. "No loss at all, as the old man is no longer of any use," thought Payne. Her mind was already busy strategizing on whom her coffee money and her time were better spent in order to advance her career prospects.
 
-## Payne's preliminary box
+# (APPENDIX) Appendix{-}
+
+# Payne's policy note box
 
 <div style = "background-color:#d4efdf; width:auto; height:auto; padding-top:0.5px; 
 padding-bottom:5px; padding-left:20px; padding-right:20px; font-size:90%; border:1px solid black">
@@ -90,3 +92,14 @@ ggplot(data=gb.rnd.df, aes(x=Krange)) + geom_line(aes(y=gb.rnd.preBrexit), col="
 
 </div>
 
+ 
+# Bloomberg Training Video 
+
+Bloomberg is one of the main providers of financial data, including price quotes for the FX option contracts discussed in these notes. The video below provides an overview of the FX option functionality available in the Bloomberg terminals, including the rapid generation of volatility smiles and volatility surfaces.
+
+```{r fig.align='center', echo=FALSE}
+knitr::include_url("https://www.youtube.com/embed/wpcvGhYN4eQ")
+```
+
+
+https://youtu.be/wpcvGhYN4eQ

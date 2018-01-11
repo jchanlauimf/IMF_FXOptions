@@ -83,12 +83,12 @@ When the foreign interest rate is small and/or the time to maturity is short, th
 To see the association between the $ATM$ vol and the level effect, Payne increased the $ATM$, 25$\Delta$, and 75$\Delta$ vols by the same amount, $\delta$. She drew a chart showing the impact on the volatility smile before and after the vol increase:
 
 \
-```{r echo=FALSE, out.width="`100%", fig.cap="The $ATM$ vol reflects the level of the smile"}
+```{r echo=FALSE, out.width="100%", fig.cap="The $ATM$ vol reflects the level of the smile"}
 include_graphics("images/figRRLevel.png")
 ```
 \
 
-Th shape of the volatility smile did not change at all. This was the expected result: Payne remembered, from her high school algebra classes, that such transformation was equivalent to just an upward translation of the parabola determined by the three points. All things equal, changes in $\sigma_{ATM}$ only implies an upward or downward movements of the volatility smile, clearly a level effect. Note that the butterfly spread remains unchanged.
+The shape of the volatility smile did not change at all. This was the expected result: Payne remembered, from her high school algebra classes, that such transformation was equivalent to just an upward translation of the parabola determined by the three points. All things equal, changes in $\sigma_{ATM}$ only implies an upward or downward movements of the volatility smile, clearly a level effect. Note that the butterfly spread remains unchanged.
 
 ## Slope
 
@@ -107,7 +107,7 @@ The difference between the vols in the wings increased. In other words, the abso
 "Suppose the $ATM$ vol remains unchanged but the volatility in the wings decreases" thought Payne. She did that and drew a chart similar to the one below:
 
 \
-```{r echo=FALSE, out.width="`100%", fig.cap="The butterfly spread reflects the curvature of the smile"}
+```{r echo=FALSE, out.width="100%", fig.cap="The butterfly spread reflects the curvature of the smile"}
 include_graphics("images/figRRCurvature.png")
 ```
 \
