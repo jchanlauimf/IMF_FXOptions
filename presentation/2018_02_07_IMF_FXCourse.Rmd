@@ -5,7 +5,7 @@ date: "February 7, 2018"
 output: 
   beamer_presentation:
     keep_tex: true
-    highlight: kate
+    highlight: pygments
 classoption: "aspectratio=169"   
 ---
 
@@ -710,11 +710,18 @@ ggplot(data = smile.data, aes(x=Delta, y=value, colour=variable)) +
 
 # Market views are risk-neutral, not objective
 
-# Extraction techniques
+# Extraction methods
+
+Methods fall under one of three categories:
 
 - Parametric methods
 - Semiparametric methods
 - Non-parametric methods
+
+All methods require constructing call and/or put functions
+
+- Option premia vs. strike price
+
 
 # Parametric methods
 
@@ -745,6 +752,15 @@ C^F(K) = \exp(-R_d\times T) \int_{K}^{\infty} \left( S_T - K\right) dF(S_T; \Lam
 \frac{\partial^2 C}{\partial K^2} \bigg\rvert_{K=S} = \exp(-R_d \times T)q(S).
 \]
 - Use numerical methods to calculate derivative and find risk neutral distribution
+
+
+#
+\color{blue}
+\LARGE{Part F:}
+\
+\LARGE{Extracting Risk-Neutral Densities}
+\
+\Large{Constructing option premium functions}
 
 
 # Constructing the market call function (1)
@@ -912,3 +928,11 @@ ggplot(putstrike.df) + geom_line(aes(x=K_preBrexit,y=Put_preBrexit), col="red", 
   geom_hline(yintercept = 0, col="black")
 
 ```
+
+#
+\color{blue}
+\LARGE{Part F:}
+\
+\LARGE{Extracting Risk-Neutral Densities}
+\
+\Large{Using the RND package to generate densities}

@@ -988,7 +988,9 @@ In addition to the 25\(\Delta\) and 75\(\Delta\) vols, obtain the
 
 \end{frame}
 
-\begin{frame}{Extraction techniques}
+\begin{frame}{Extraction methods}
+
+Methods fall under one of three categories:
 
 \begin{itemize}
 \tightlist
@@ -998,6 +1000,14 @@ In addition to the 25\(\Delta\) and 75\(\Delta\) vols, obtain the
   Semiparametric methods
 \item
   Non-parametric methods
+\end{itemize}
+
+All methods require constructing call and/or put functions
+
+\begin{itemize}
+\tightlist
+\item
+  Option premia vs.~strike price
 \end{itemize}
 
 \end{frame}
@@ -1059,6 +1069,14 @@ C^F(K) = \exp(-R_d\times T) \int_{K}^{\infty} \left( S_T - K\right) dF(S_T; \Lam
   Use numerical methods to calculate derivative and find risk neutral
   distribution
 \end{itemize}
+
+\end{frame}
+
+\begin{frame}{}
+
+\color{blue} \LARGE{Part F:}\\
+\LARGE{Extracting Risk-Neutral Densities}\\
+\Large{Constructing option premium functions}
 
 \end{frame}
 
@@ -1263,5 +1281,13 @@ sense? Explain why.
 \begin{frame}{Constructing the market put function (4)}
 
 \includegraphics[width=0.9\linewidth]{2018_02_07_IMF_FXCourse_files/figure-beamer/unnamed-chunk-48-1}
+
+\end{frame}
+
+\begin{frame}{}
+
+\color{blue} \LARGE{Part F:}\\
+\LARGE{Extracting Risk-Neutral Densities}\\
+\Large{Using the RND package to generate densities}
 
 \end{frame}
