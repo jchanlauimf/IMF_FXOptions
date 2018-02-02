@@ -1,0 +1,20 @@
+\frametitle{Constructing the market call function (4)}
+
+Generate the call premia:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Call_preBrexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, K_preBrexit, }
+\NormalTok{                        smile.df}\OperatorTok{$}\NormalTok{preBrexit, }\DataTypeTok{S=}\NormalTok{spot[}\DecValTok{1}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}
+                        \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{1}\NormalTok{],}\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{1}\NormalTok{], }\DataTypeTok{option_type=}\StringTok{"c"}\NormalTok{)}
+
+\NormalTok{Call_Brexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, K_Brexit, }
+\NormalTok{                     smile.df}\OperatorTok{$}\NormalTok{Brexit, }\DataTypeTok{S=}\NormalTok{spot[}\DecValTok{2}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}
+                     \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{2}\NormalTok{],}\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{2}\NormalTok{],}\DataTypeTok{option_type=}\StringTok{"c"}\NormalTok{)}
+
+\NormalTok{Call_postBrexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, K_postBrexit, }
+\NormalTok{                         smile.df}\OperatorTok{$}\NormalTok{postBrexit,}\DataTypeTok{S=}\NormalTok{spot[}\DecValTok{3}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}
+                         \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{3}\NormalTok{],}\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{3}\NormalTok{],}\DataTypeTok{option_type=}\StringTok{"c"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
