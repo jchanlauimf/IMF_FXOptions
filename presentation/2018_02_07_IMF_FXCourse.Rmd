@@ -5,6 +5,7 @@ date: "February 7, 2018"
 output: 
   beamer_presentation:
     keep_tex: true
+    highlight: kate
 classoption: "aspectratio=169"   
 ---
 
@@ -631,7 +632,7 @@ ggplot(data=vol.data, aes(x=Delta, y=value, shape=variable)) +
    labs(y="vol")
 ```
 
-# A more refined volatility smile
+# A more refined volatility smile (1)
 
 ```{r echo=TRUE, out.width="100%", fig.asp=0.4, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 # Fit second degree polynomial to smile
@@ -649,6 +650,55 @@ fit.Vol = function(data.vol, data.delta,delta.range)
 
   return(iVolInterpol)
 }
+```
+
+# A more refined volatility smile (2)
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.4, fig.cap = "Fitted volatility smiles", eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+# Get the data points from the vol.smile data frame
+data.delta = vol.smile$Delta
+data.vol  = vol.smile$PreBrexit
+
+# Interpolation and extrapolation range
+delta.range = seq(from=0.01, to = 0.99, by=0.005)
+
+# Obtain the volatility smiles
+smile.preBrexit =fit.Vol(vol.smile$PreBrexit, data.delta, delta.range)
+smile.Brexit    =fit.Vol(vol.smile$Brexit, data.delta, delta.range)
+smile.postBrexit=fit.Vol(vol.smile$PostBrexit, data.delta, delta.range)
+```
+
+# A more refined volatility smile (3)
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.4, eval=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+# Group the extended volatility smiles in a data frame
+smile.df = data.frame(delta.range, smile.preBrexit, 
+                      smile.Brexit, smile.postBrexit)
+rownames(smile.df) = NULL
+colnames(smile.df) = c("Delta","preBrexit","Brexit", "postBrexit")
+
+# Create the chart
+library(reshape2)
+smile.data = melt(smile.df, id="Delta")
+ggplot(data = smile.data, aes(x=Delta, y=value, colour=variable)) +
+  geom_line(size=1) + labs(y="vol")
+```
+
+# A more refined volatility smile (4)
+
+```{r echo=FALSE, out.width="100%", fig.asp=0.4, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+# Group the extended volatility smiles in a data frame
+smile.df = data.frame(delta.range, smile.preBrexit, smile.Brexit, smile.postBrexit)
+rownames(smile.df) = NULL
+colnames(smile.df) = c("Delta","preBrexit","Brexit", "postBrexit")
+
+# Create the chart
+library(reshape2)
+smile.data = melt(smile.df, id="Delta")
+ggplot(data = smile.data, aes(x=Delta, y=value, colour=variable)) + 
+  geom_line(size=1) + labs(y="vol")
 ```
 
 
@@ -736,7 +786,7 @@ GKoption.premium = function(K,sigma,S,Tenor,fwd,rf,option_type)
 
 # Constructing the market call function (3)
 
-Strike ranges for the selected dates
+Strike ranges for the selected dates:
 
 ```{r echo=TRUE, out.width="100%", fig.asp=0.4, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 K_preBrexit = mapply(get.strike,smile.df$preBrexit, smile.df$Delta, 
@@ -747,3 +797,118 @@ K_postBrexit= mapply(get.strike,smile.df$postBrexit, smile.df$Delta,
                      S0=spot[3], fwd=forward[3], rf=rf[3], Tenor=0.25)
 ```
 
+# Constructing the market call function (4)
+
+Generate the call premia:
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+Call_preBrexit = mapply(GKoption.premium, K_preBrexit, 
+                        smile.df$preBrexit, S=spot[1],Tenor=Tenor,
+                        fwd=forward[1],rf=rf[1], option_type="c")
+
+Call_Brexit = mapply(GKoption.premium, K_Brexit, 
+                     smile.df$Brexit, S=spot[2],Tenor=Tenor,
+                     fwd=forward[2],rf=rf[2],option_type="c")
+
+Call_postBrexit = mapply(GKoption.premium, K_postBrexit, 
+                         smile.df$postBrexit,S=spot[3],Tenor=Tenor,
+                         fwd=forward[3],rf=rf[3],option_type="c")
+```
+
+# Constructing the market call function (5)
+
+The data frame `callstrike.df` collects the call premium-strike functions for the selected dates:
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+callstrike.df = data.frame(K_preBrexit, Call_preBrexit, 
+                           K_Brexit, Call_Brexit, 
+                           K_postBrexit, Call_postBrexit)
+
+```
+
+# Constructing the market call function (6)
+
+Plot the market call function
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, fig.cap = "Call premium-strike functions", eval=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+ggplot(callstrike.df) +
+  geom_line(aes(x=K_preBrexit,y=Call_preBrexit), col="red", size=1) + 
+  geom_line(aes(x=K_Brexit, y=Call_Brexit), col="darkcyan", size=1) +
+  geom_line(aes(x=K_postBrexit, y=Call_postBrexit), col="blue", size=1) +
+  labs(x="GBPUSD", y="Strike price") + 
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  geom_vline(xintercept = spot[3], col="blue", linetype="longdash") +
+  geom_hline(yintercept = 0, col="black")
+```
+
+# Constructing the market call function (7)
+```{r echo=FALSE, out.width="90%", fig.asp=0.6,  eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+ggplot(callstrike.df) + 
+  geom_line(aes(x=K_preBrexit,y=Call_preBrexit), col="red", size=1) + 
+  geom_line(aes(x=K_Brexit, y=Call_Brexit), col="darkcyan", size=1) +
+  geom_line(aes(x=K_postBrexit, y=Call_postBrexit), col="blue", size=1) +
+  labs(x="GBPUSD", y="Strike price") + 
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  geom_vline(xintercept = spot[3], col="blue", linetype="longdash") +
+  geom_hline(yintercept = 0, col="black")
+```
+
+
+# Constructing the market call function (8)
+Question: the call premium-strike functions are downward sloping, i.e. the call premium is higher for lower strike prices. 
+Does this make sense? Explain why.
+
+# Constructing the market put function (1)
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+Put_preBrexit = mapply(GKoption.premium, K_preBrexit, 
+                       smile.df$preBrexit,S=spot[1],Tenor=Tenor,
+                       fwd=forward[1],rf=rf[1],option_type="p")
+
+Put_Brexit = mapply(GKoption.premium, K_Brexit, smile.df$Brexit,
+                        S=spot[2],Tenor=Tenor,fwd=forward[2],
+                        rf=rf[2],option_type="p")
+
+Put_postBrexit = mapply(GKoption.premium, K_postBrexit, 
+                        smile.df$postBrexit,S=spot[3],Tenor=Tenor,
+                        fwd=forward[3],rf=rf[3],option_type="p")
+```
+
+# Constructing the market put function (2)
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+putstrike.df = data.frame(K_preBrexit, Put_preBrexit, 
+                          K_Brexit, Put_Brexit, 
+                          K_postBrexit, Put_postBrexit)
+```
+
+# Constructing the market put function (3)
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, fig.cap = "Put premium-strike functions", eval=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+ggplot(putstrike.df) + 
+  geom_line(aes(x=K_preBrexit,y=Put_preBrexit), col="red", size=1) + 
+  geom_line(aes(x=K_Brexit, y=Put_Brexit), col="darkcyan", size=1) +
+  geom_line(aes(x=K_postBrexit, y=Put_postBrexit), col="blue", size=1) +
+  labs(x="Strike price", y="Put premium") + 
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  geom_vline(xintercept = spot[3], col="blue", linetype="longdash") +
+  geom_hline(yintercept = 0, col="black")
+
+```
+
+# Constructing the market put function (4)
+```{r echo=FALSE, out.width="90%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+ggplot(putstrike.df) + geom_line(aes(x=K_preBrexit,y=Put_preBrexit), col="red", size=1) + 
+  geom_line(aes(x=K_Brexit, y=Put_Brexit), col="darkcyan", size=1) +
+  geom_line(aes(x=K_postBrexit, y=Put_postBrexit), col="blue", size=1) +
+  labs(x="Strike price", y="Put premium") + 
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  geom_vline(xintercept = spot[3], col="blue", linetype="longdash") +
+  geom_hline(yintercept = 0, col="black")
+
+```

@@ -907,13 +907,11 @@ In addition to the 25\(\Delta\) and 75\(\Delta\) vols, obtain the
 
 \end{frame}
 
-\begin{frame}[fragile]{A more refined volatility smile}
+\begin{frame}[fragile]{A more refined volatility smile (1)}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Function fit.vol fits a polynomial of }
-\CommentTok{# second degree to the volatility smile}
-
+\CommentTok{# Fit second degree polynomial to smile}
 \NormalTok{fit.Vol =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(data.vol, data.delta,delta.range)}
 \NormalTok{\{}
 \NormalTok{  poly.fit =}\StringTok{ }\KeywordTok{lm}\NormalTok{(data.vol }\OperatorTok{~}\StringTok{ }\KeywordTok{poly}\NormalTok{(data.delta, }\DecValTok{2}\NormalTok{, }\DataTypeTok{raw=}\OtherTok{TRUE}\NormalTok{))  }
@@ -930,6 +928,52 @@ In addition to the 25\(\Delta\) and 75\(\Delta\) vols, obtain the
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{A more refined volatility smile (2)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Get the data points from the vol.smile data frame}
+\NormalTok{data.delta =}\StringTok{ }\NormalTok{vol.smile}\OperatorTok{$}\NormalTok{Delta}
+\NormalTok{data.vol  =}\StringTok{ }\NormalTok{vol.smile}\OperatorTok{$}\NormalTok{PreBrexit}
+
+\CommentTok{# Interpolation and extrapolation range}
+\NormalTok{delta.range =}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\DataTypeTok{from=}\FloatTok{0.01}\NormalTok{, }\DataTypeTok{to =} \FloatTok{0.99}\NormalTok{, }\DataTypeTok{by=}\FloatTok{0.005}\NormalTok{)}
+
+\CommentTok{# Obtain the volatility smiles}
+\NormalTok{smile.preBrexit =}\KeywordTok{fit.Vol}\NormalTok{(vol.smile}\OperatorTok{$}\NormalTok{PreBrexit, data.delta, delta.range)}
+\NormalTok{smile.Brexit    =}\KeywordTok{fit.Vol}\NormalTok{(vol.smile}\OperatorTok{$}\NormalTok{Brexit, data.delta, delta.range)}
+\NormalTok{smile.postBrexit=}\KeywordTok{fit.Vol}\NormalTok{(vol.smile}\OperatorTok{$}\NormalTok{PostBrexit, data.delta, delta.range)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{A more refined volatility smile (3)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Group the extended volatility smiles in a data frame}
+\NormalTok{smile.df =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(delta.range, smile.preBrexit, }
+\NormalTok{                      smile.Brexit, smile.postBrexit)}
+\KeywordTok{rownames}\NormalTok{(smile.df) =}\StringTok{ }\OtherTok{NULL}
+\KeywordTok{colnames}\NormalTok{(smile.df) =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Delta"}\NormalTok{,}\StringTok{"preBrexit"}\NormalTok{,}\StringTok{"Brexit"}\NormalTok{, }\StringTok{"postBrexit"}\NormalTok{)}
+
+\CommentTok{# Create the chart}
+\KeywordTok{library}\NormalTok{(reshape2)}
+\NormalTok{smile.data =}\StringTok{ }\KeywordTok{melt}\NormalTok{(smile.df, }\DataTypeTok{id=}\StringTok{"Delta"}\NormalTok{)}
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ smile.data, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Delta, }\DataTypeTok{y=}\NormalTok{value, }\DataTypeTok{colour=}\NormalTok{variable)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{y=}\StringTok{"vol"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}{A more refined volatility smile (4)}
+
+\includegraphics[width=1\linewidth]{2018_02_07_IMF_FXCourse_files/figure-beamer/unnamed-chunk-37-1}
 
 \end{frame}
 
@@ -1075,5 +1119,149 @@ C^F(K) = \exp(-R_d\times T) \int_{K}^{\infty} \left( S_T - K\right) dF(S_T; \Lam
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Constructing the market call function (3)}
+
+Strike ranges for the selected dates:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{K_preBrexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(get.strike,smile.df}\OperatorTok{$}\NormalTok{preBrexit, smile.df}\OperatorTok{$}\NormalTok{Delta, }
+                     \DataTypeTok{S0=}\NormalTok{spot[}\DecValTok{1}\NormalTok{], }\DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{1}\NormalTok{], }\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{1}\NormalTok{], }\DataTypeTok{Tenor=}\FloatTok{0.25}\NormalTok{)}
+\NormalTok{K_Brexit    =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(get.strike,smile.df}\OperatorTok{$}\NormalTok{Brexit, smile.df}\OperatorTok{$}\NormalTok{Delta, }
+                     \DataTypeTok{S0=}\NormalTok{spot[}\DecValTok{2}\NormalTok{], }\DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{2}\NormalTok{], }\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{2}\NormalTok{], }\DataTypeTok{Tenor=}\FloatTok{0.25}\NormalTok{)}
+\NormalTok{K_postBrexit=}\StringTok{ }\KeywordTok{mapply}\NormalTok{(get.strike,smile.df}\OperatorTok{$}\NormalTok{postBrexit, smile.df}\OperatorTok{$}\NormalTok{Delta, }
+                     \DataTypeTok{S0=}\NormalTok{spot[}\DecValTok{3}\NormalTok{], }\DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{3}\NormalTok{], }\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{3}\NormalTok{], }\DataTypeTok{Tenor=}\FloatTok{0.25}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Constructing the market call function (4)}
+
+Generate the call premia:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Call_preBrexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, K_preBrexit, }
+\NormalTok{                        smile.df}\OperatorTok{$}\NormalTok{preBrexit, }\DataTypeTok{S=}\NormalTok{spot[}\DecValTok{1}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}
+                        \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{1}\NormalTok{],}\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{1}\NormalTok{], }\DataTypeTok{option_type=}\StringTok{"c"}\NormalTok{)}
+
+\NormalTok{Call_Brexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, K_Brexit, }
+\NormalTok{                     smile.df}\OperatorTok{$}\NormalTok{Brexit, }\DataTypeTok{S=}\NormalTok{spot[}\DecValTok{2}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}
+                     \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{2}\NormalTok{],}\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{2}\NormalTok{],}\DataTypeTok{option_type=}\StringTok{"c"}\NormalTok{)}
+
+\NormalTok{Call_postBrexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, K_postBrexit, }
+\NormalTok{                         smile.df}\OperatorTok{$}\NormalTok{postBrexit,}\DataTypeTok{S=}\NormalTok{spot[}\DecValTok{3}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}
+                         \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{3}\NormalTok{],}\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{3}\NormalTok{],}\DataTypeTok{option_type=}\StringTok{"c"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Constructing the market call function (5)}
+
+The data frame \texttt{callstrike.df} collects the call premium-strike
+functions for the selected dates:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{callstrike.df =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(K_preBrexit, Call_preBrexit, }
+\NormalTok{                           K_Brexit, Call_Brexit, }
+\NormalTok{                           K_postBrexit, Call_postBrexit)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Constructing the market call function (6)}
+
+Plot the market call function
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(callstrike.df) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{K_preBrexit,}\DataTypeTok{y=}\NormalTok{Call_preBrexit), }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{, }\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{K_Brexit, }\DataTypeTok{y=}\NormalTok{Call_Brexit), }\DataTypeTok{col=}\StringTok{"darkcyan"}\NormalTok{, }\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{K_postBrexit, }\DataTypeTok{y=}\NormalTok{Call_postBrexit), }\DataTypeTok{col=}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\StringTok{"GBPUSD"}\NormalTok{, }\DataTypeTok{y=}\StringTok{"Strike price"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{1}\NormalTok{], }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{2}\NormalTok{], }\DataTypeTok{col=}\StringTok{"darkcyan"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{3}\NormalTok{], }\DataTypeTok{col=}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_hline}\NormalTok{(}\DataTypeTok{yintercept =} \DecValTok{0}\NormalTok{, }\DataTypeTok{col=}\StringTok{"black"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}{Constructing the market call function (7)}
+
+\includegraphics[width=0.9\linewidth]{2018_02_07_IMF_FXCourse_files/figure-beamer/unnamed-chunk-44-1}
+
+\end{frame}
+
+\begin{frame}{Constructing the market call function (8)}
+
+Question: the call premium-strike functions are downward sloping,
+i.e.~the call premium is higher for lower strike prices. Does this make
+sense? Explain why.
+
+\end{frame}
+
+\begin{frame}[fragile]{Constructing the market put function (1)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Put_preBrexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, K_preBrexit, }
+\NormalTok{                       smile.df}\OperatorTok{$}\NormalTok{preBrexit,}\DataTypeTok{S=}\NormalTok{spot[}\DecValTok{1}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}
+                       \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{1}\NormalTok{],}\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{1}\NormalTok{],}\DataTypeTok{option_type=}\StringTok{"p"}\NormalTok{)}
+
+\NormalTok{Put_Brexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, K_Brexit, smile.df}\OperatorTok{$}\NormalTok{Brexit,}
+                        \DataTypeTok{S=}\NormalTok{spot[}\DecValTok{2}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}\DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{2}\NormalTok{],}
+                        \DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{2}\NormalTok{],}\DataTypeTok{option_type=}\StringTok{"p"}\NormalTok{)}
+
+\NormalTok{Put_postBrexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, K_postBrexit, }
+\NormalTok{                        smile.df}\OperatorTok{$}\NormalTok{postBrexit,}\DataTypeTok{S=}\NormalTok{spot[}\DecValTok{3}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}
+                        \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{3}\NormalTok{],}\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{3}\NormalTok{],}\DataTypeTok{option_type=}\StringTok{"p"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Constructing the market put function (2)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{putstrike.df =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(K_preBrexit, Put_preBrexit, }
+\NormalTok{                          K_Brexit, Put_Brexit, }
+\NormalTok{                          K_postBrexit, Put_postBrexit)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Constructing the market put function (3)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(putstrike.df) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{K_preBrexit,}\DataTypeTok{y=}\NormalTok{Put_preBrexit), }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{, }\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{K_Brexit, }\DataTypeTok{y=}\NormalTok{Put_Brexit), }\DataTypeTok{col=}\StringTok{"darkcyan"}\NormalTok{, }\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{K_postBrexit, }\DataTypeTok{y=}\NormalTok{Put_postBrexit), }\DataTypeTok{col=}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\StringTok{"Strike price"}\NormalTok{, }\DataTypeTok{y=}\StringTok{"Put premium"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{1}\NormalTok{], }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{2}\NormalTok{], }\DataTypeTok{col=}\StringTok{"darkcyan"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{3}\NormalTok{], }\DataTypeTok{col=}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_hline}\NormalTok{(}\DataTypeTok{yintercept =} \DecValTok{0}\NormalTok{, }\DataTypeTok{col=}\StringTok{"black"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}{Constructing the market put function (4)}
+
+\includegraphics[width=0.9\linewidth]{2018_02_07_IMF_FXCourse_files/figure-beamer/unnamed-chunk-48-1}
 
 \end{frame}
