@@ -185,11 +185,14 @@ p4
 
 # What the data tell us: risk reversals (1)
 
-<div style="border:1px solid black;padding-left:20px; padding-right:20px;">
-```{r echo=FALSE, out.width="100%", fig.cap="Risk reversal definition (Wikipedia)"}
-include_graphics("images/figRRDefinition.png")
+- Risk reversal payoff, long a call and short a put, both of them OTM:
+
+```{r echo=FALSE, out.width="70%", fig.cap="Risk reversal payoff at maturity"}
+include_graphics("images/fig25RRSimple.png")
 ```
-</div>
+
+- Explain why the price could be positive (or negative)?
+
 
 # What the data tell us: risk reversals (2)
 
@@ -205,16 +208,6 @@ RR_{25\Delta} = \sigma_{25\Delta C} - \sigma_{25\Delta P}
 
 # What the data tell us: risk reversals (3)
 
-- Risk reversal payoff, long a call and short a put, both of them OTM:
-
-```{r echo=FALSE, out.width="70%", fig.cap="Risk reversal payoff at maturity"}
-include_graphics("images/fig25RRSimple.png")
-```
-
-- Explain why the price could be positive (or negative)?
-
-# What the data tell us: risk reversals (4)
-
 ```{r out.width="100%", fig.asp=0.33, echo= TRUE}
 p5 = ggplot(data, aes(Dates, RR25D3M)) + geom_line(colour="red") + 
         geom_hline(yintercept=0)
@@ -223,7 +216,7 @@ p5 = p5 + geom_vline(xintercept=as.POSIXct(as.Date(("2016-06-22 UTC"))),
 p5
 ```
 
-# What the data tell us: risk reversals (5)
+# What the data tell us: risk reversals (4)
 
 ```{r out.width="100%", fig.asp=0.33, echo= TRUE}
 p6 = ggplot(data, aes(Dates, RR10D3M)) + geom_line(colour="blue") + 
@@ -468,7 +461,7 @@ include_graphics("images/figRRCurvature.png")
 \LARGE{Part E:}
 \
 \LARGE{Constructing the Volatility Smile}
-\ 
+\
 \Large{A Brexit case study}
 
 # Selecting the dates
@@ -1556,7 +1549,13 @@ ggplot(data=shimko.rnd.df, aes(x=Krange)) +
   labs(x="GBPUSD", y="3-month risk-neutral density")   
 ```
 
+#
+
 \color{blue}
+\begin{center}
 \LARGE{Thank You}
+\end{center}
 \
-\LARGE{Have Fun!}
+\begin{center}
+\LARGE{And Have Fun!}
+\end{center}
