@@ -2,11 +2,11 @@
 -----
 Lecture notes, _Extracting Information from FX Options_
 
-- docs:
+- docs: 
   bookdown version of lecture notes, published as [Github](https://jchanlauimf.github.io/IMF_FXOptions/) page
   
-- presentation:
+- presentation: 
   Beamer presentation files
   
-- build:
+- build: 
   Build files
