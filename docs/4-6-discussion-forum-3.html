@@ -32,8 +32,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-<link rel="prev" href="4-1-selecting-the-data-for-specific-dates.html">
-<link rel="next" href="4-3-delta-atm-market-convention.html">
+<link rel="prev" href="4-5-a-more-refined-approximation-of-the-volatility-smile.html">
+<link rel="next" href="5-extracting-the-risk-neutral-density.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -183,42 +183,44 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="calculation-of-implied-volatilities-vols" class="section level2">
-<h2><span class="header-section-number">4.2</span> Calculation of implied volatilities (vols)</h2>
-<p>The following lines of code used the information from the risk reversals and the butterfly spreads to calculate the vols of the different calls and puts:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Vols are in percent, expressed them as simple numbers</span>
-this.data<span class="op">$</span>atm  =<span class="st"> </span>this.data<span class="op">$</span>atm<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>rr25 =<span class="st"> </span>this.data<span class="op">$</span>rr25<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>bf25 =<span class="st"> </span>this.data<span class="op">$</span>bf25<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>rr10 =<span class="st"> </span>this.data<span class="op">$</span>rr10<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>bf10 =<span class="st"> </span>this.data<span class="op">$</span>bf10<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>rf   =<span class="st"> </span>this.data<span class="op">$</span>rf<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>rd   =<span class="st"> </span>this.data<span class="op">$</span>rd<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>imp_rd=this.data<span class="op">$</span>imp_rd<span class="op">/</span><span class="dv">100</span>
+<div id="discussion-forum-3" class="section level2">
+<h2><span class="header-section-number">4.6</span> Discussion forum</h2>
+<p>Your feedback is very important to improve these notes and the courses it support. In this discussion forum you are welcome to post your questions, comments, and suggestions. Just be polite, stay on topic, and do not use the forum for self promotion. You can post comments as a guest; just click on the name cell of the form and the guest option will pop up.</p>
+<div id="disqus_thread">
 
-<span class="co"># We will use this.data repeatedly</span>
-<span class="co"># Attach it to access its elements</span>
-
-<span class="kw">attach</span>(this.data)     
-
-<span class="co"># Recover vols for different deltas and put them in the data frame</span>
-
-this.data<span class="op">$</span>sigma10c =<span class="st"> </span>atm <span class="op">+</span><span class="st"> </span>bf10 <span class="op">+</span><span class="st"> </span><span class="fl">0.5</span><span class="op">*</span>rr10
-this.data<span class="op">$</span>sigma25c =<span class="st"> </span>atm <span class="op">+</span><span class="st"> </span>bf25 <span class="op">+</span><span class="st"> </span><span class="fl">0.5</span><span class="op">*</span>rr25
-this.data<span class="op">$</span>sigma75c =<span class="st"> </span>this.data<span class="op">$</span>sigma25c <span class="op">-</span><span class="st"> </span>rr25
-this.data<span class="op">$</span>sigma90c =<span class="st"> </span>this.data<span class="op">$</span>sigma10c <span class="op">-</span><span class="st"> </span>rr10
-this.data<span class="op">$</span>sigmaatm =<span class="st"> </span>atm
-
-Tenor =<span class="st"> </span><span class="dv">3</span><span class="op">/</span><span class="dv">12</span>   <span class="co"># Maturity of options, 3 months, in years</span></code></pre></div>
-<p>The tenor, or time to maturity of the option, was set to <span class="math inline">\(\frac{3}{12} = 0.25\)</span> years, to be consistent with the market convention for implied volatility, which is annualized.</p>
 </div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://imf-fxoptions.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>
+Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+</noscript>
+<script id="dsq-count-scr" src="//imf-fxoptions.disqus.com/count.js" async></script>
+
+</div>
+<!-- </div> -->
             </section>
 
           </div>
         </div>
       </div>
-<a href="4-1-selecting-the-data-for-specific-dates.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="4-3-delta-atm-market-convention.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="4-5-a-more-refined-approximation-of-the-volatility-smile.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="5-extracting-the-risk-neutral-density.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

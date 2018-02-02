@@ -32,8 +32,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-<link rel="prev" href="4-1-selecting-the-data-for-specific-dates.html">
-<link rel="next" href="4-3-delta-atm-market-convention.html">
+<link rel="prev" href="1-1-Data-exploration.html">
+<link rel="next" href="1-3-implied-and-actual-usd-rates.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -183,42 +183,33 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="calculation-of-implied-volatilities-vols" class="section level2">
-<h2><span class="header-section-number">4.2</span> Calculation of implied volatilities (vols)</h2>
-<p>The following lines of code used the information from the risk reversals and the butterfly spreads to calculate the vols of the different calls and puts:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Vols are in percent, expressed them as simple numbers</span>
-this.data<span class="op">$</span>atm  =<span class="st"> </span>this.data<span class="op">$</span>atm<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>rr25 =<span class="st"> </span>this.data<span class="op">$</span>rr25<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>bf25 =<span class="st"> </span>this.data<span class="op">$</span>bf25<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>rr10 =<span class="st"> </span>this.data<span class="op">$</span>rr10<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>bf10 =<span class="st"> </span>this.data<span class="op">$</span>bf10<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>rf   =<span class="st"> </span>this.data<span class="op">$</span>rf<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>rd   =<span class="st"> </span>this.data<span class="op">$</span>rd<span class="op">/</span><span class="dv">100</span>
-this.data<span class="op">$</span>imp_rd=this.data<span class="op">$</span>imp_rd<span class="op">/</span><span class="dv">100</span>
+<div id="spot-and-forward-exchange-rate" class="section level2">
+<h2><span class="header-section-number">1.2</span> Spot and forward exchange rate</h2>
+<p>It was time to start eyeballing the data. First, she looked at the dynamics of the spot and forward exchange rate highlighting carefully the week of the Brexit referendum vote:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Plot of the spot exchange rate with vertical line at Brexit vote</span>
+p1 =<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(Dates, Spot)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">colour=</span><span class="st">&quot;blue&quot;</span>) 
+p1 =<span class="st"> </span>p1 <span class="op">+</span><span class="st"> </span><span class="kw">geom_vline</span>(<span class="dt">xintercept=</span><span class="kw">as.POSIXct</span>(<span class="kw">as.Date</span>((<span class="st">&quot;2016-06-22 UTC&quot;</span>))),<span class="dt">linetype=</span><span class="st">&quot;longdash&quot;</span>)
 
-<span class="co"># We will use this.data repeatedly</span>
-<span class="co"># Attach it to access its elements</span>
+p2 =<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(Dates, FWD3M)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">colour=</span><span class="st">&quot;red&quot;</span>) 
+p2 =<span class="st"> </span>p2 <span class="op">+</span><span class="st"> </span><span class="kw">geom_vline</span>(<span class="dt">xintercept=</span><span class="kw">as.POSIXct</span>(<span class="kw">as.Date</span>((<span class="st">&quot;2016-06-22 UTC&quot;</span>))),<span class="dt">linetype=</span><span class="st">&quot;longdash&quot;</span>)
 
-<span class="kw">attach</span>(this.data)     
-
-<span class="co"># Recover vols for different deltas and put them in the data frame</span>
-
-this.data<span class="op">$</span>sigma10c =<span class="st"> </span>atm <span class="op">+</span><span class="st"> </span>bf10 <span class="op">+</span><span class="st"> </span><span class="fl">0.5</span><span class="op">*</span>rr10
-this.data<span class="op">$</span>sigma25c =<span class="st"> </span>atm <span class="op">+</span><span class="st"> </span>bf25 <span class="op">+</span><span class="st"> </span><span class="fl">0.5</span><span class="op">*</span>rr25
-this.data<span class="op">$</span>sigma75c =<span class="st"> </span>this.data<span class="op">$</span>sigma25c <span class="op">-</span><span class="st"> </span>rr25
-this.data<span class="op">$</span>sigma90c =<span class="st"> </span>this.data<span class="op">$</span>sigma10c <span class="op">-</span><span class="st"> </span>rr10
-this.data<span class="op">$</span>sigmaatm =<span class="st"> </span>atm
-
-Tenor =<span class="st"> </span><span class="dv">3</span><span class="op">/</span><span class="dv">12</span>   <span class="co"># Maturity of options, 3 months, in years</span></code></pre></div>
-<p>The tenor, or time to maturity of the option, was set to <span class="math inline">\(\frac{3}{12} = 0.25\)</span> years, to be consistent with the market convention for implied volatility, which is annualized.</p>
+<span class="kw">multiplot</span>(p1,p2,<span class="dt">cols=</span><span class="dv">1</span>)</code></pre></div>
+<div class="figure"><span id="fig:unnamed-chunk-8"></span>
+<img src="images/unnamed-chunk-8-1.png" alt="USDGBP spot and forward exchange rate" width="100%" />
+<p class="caption">
+Figure 1.3: USDGBP spot and forward exchange rate
+</p>
+</div>
+<p><br />
+The behavior of both series were quite similar. Both the spot and forward rates had been range bound in the first half of 2016 and their behavior did not anticipate the exchange rate correction following the referendum. Payne proceed to analyze the other data series hoping they could provide additional information.</p>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="4-1-selecting-the-data-for-specific-dates.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="4-3-delta-atm-market-convention.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="1-1-Data-exploration.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1-3-implied-and-actual-usd-rates.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
