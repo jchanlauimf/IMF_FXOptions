@@ -692,7 +692,7 @@ Implied volatility
 
 \end{frame}
 
-\begin{frame}{The slope of the smile: the butterfly spread}
+\begin{frame}{The curvature of the smile: the butterfly spread}
 
 \includegraphics[width=1\linewidth]{images/figRRCurvature}
 
@@ -818,7 +818,7 @@ In addition to the 25\(\Delta\) and 75\(\Delta\) vols, obtain the
 
 \end{frame}
 
-\begin{frame}{What is the \(ATM\) strike?}
+\begin{frame}{What is the proper \(ATM\) strike?}
 
 \begin{itemize}
 \tightlist
@@ -984,7 +984,37 @@ In addition to the 25\(\Delta\) and 75\(\Delta\) vols, obtain the
 
 \end{frame}
 
-\begin{frame}{Market views are risk-neutral, not objective}
+\begin{frame}{Market views are not forecasts}
+
+Market views
+
+\begin{itemize}
+\tightlist
+\item
+  They are not forecast of the real-world FX distribution
+\item
+  Market prices weigh risk aversion of
+
+  \begin{itemize}
+  \tightlist
+  \item
+    hedgers
+  \item
+    speculators
+  \item
+    market makers
+  \end{itemize}
+\item
+  ``Technical'' factors may affect weight of events
+\item
+  Risk-neutral, weighting expectations and risk aversion
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Not easy to disentangle them
+  \end{itemize}
+\end{itemize}
 
 \end{frame}
 
@@ -1480,7 +1510,7 @@ And more of the same for post-Brexit:
 
 \end{frame}
 
-\begin{frame}[fragile]{Generalized Beta Density (8)}
+\begin{frame}[fragile]{Generalized Beta Density (9)}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1501,10 +1531,486 @@ And more of the same for post-Brexit:
 
 \end{frame}
 
-\begin{frame}{Generalized Beta Density (9)}
+\begin{frame}{Generalized Beta Density (10)}
 
 \begin{figure}
-\includegraphics[width=1\linewidth]{2018_02_07_IMF_FXCourse_files/figure-beamer/unnamed-chunk-58-1} \caption{Generalized beta risk neutral distributions.</br>Pre-Brexit: red; Brexit: cyan; post-Brexit: blue}\label{fig:unnamed-chunk-58}
+\includegraphics[width=1\linewidth]{2018_02_07_IMF_FXCourse_files/figure-beamer/unnamed-chunk-58-1} \caption{Generalized beta risk neutral distributions. Pre-Brexit: red; Brexit: cyan; post-Brexit: blue}\label{fig:unnamed-chunk-58}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{}
+
+\color{blue} \LARGE{Part F:}\\
+\LARGE{Extracting Risk-Neutral Densities}\\
+\Large{Edgeworth expansion}
+
+\end{frame}
+
+\begin{frame}[fragile]{Edgeworth expansion (1)}
+
+\begin{itemize}
+\tightlist
+\item
+  Semi-parametric method
+\item
+  Implemented in package \texttt{RND}
+\item
+  Requires as inputs
+
+  \begin{itemize}
+  \tightlist
+  \item
+    call premia and strike range
+  \item
+    spot rate
+  \item
+    implied domestic interest rate
+  \item
+    option tenor
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Edgeworth expansion (2)}
+
+Calculations in Brexit period
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{r =}\StringTok{ }\NormalTok{imp_rd[}\DecValTok{1}\NormalTok{]                      }\CommentTok{# domestic interest rate}
+\NormalTok{te=}\StringTok{ }\NormalTok{Tenor                          }\CommentTok{# tenor of the option}
+\NormalTok{y =}\StringTok{ }\NormalTok{rf[}\DecValTok{1}\NormalTok{]                          }\CommentTok{# foreign interest rate}
+\NormalTok{s0=}\StringTok{ }\NormalTok{spot[}\DecValTok{1}\NormalTok{]                        }\CommentTok{# spot exchange rate}
+\NormalTok{call.premium =}\StringTok{ }\NormalTok{Call_preBrexit      }\CommentTok{# vector of call premium values}
+\NormalTok{call.strikes =}\StringTok{ }\NormalTok{K_preBrexit         }\CommentTok{# vector of corresponding call strikes}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Edgeworth expansion (3)}
+
+The function \texttt{extract.ew.density()} calculates the parameters of
+the Edgeworth expansion:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ew.preBrexit =}\StringTok{ }\KeywordTok{extract.ew.density}\NormalTok{(}\DataTypeTok{initial.values =} \KeywordTok{rep}\NormalTok{(}\OtherTok{NA}\NormalTok{,}\DecValTok{2}\NormalTok{), }
+                       \DataTypeTok{r=}\NormalTok{r, }\DataTypeTok{y=}\NormalTok{y, }\DataTypeTok{te=}\NormalTok{te, }\DataTypeTok{s0=}\NormalTok{s0, }
+                       \DataTypeTok{market.calls=}\NormalTok{call.premium, }
+                       \DataTypeTok{call.strikes =}\NormalTok{ call.strikes, }
+                       \DataTypeTok{call.weights =}\DecValTok{1}\NormalTok{, }\DataTypeTok{lambda=}\DecValTok{1}\NormalTok{, }\DataTypeTok{hessian.flag=}\NormalTok{F, }
+                       \DataTypeTok{cl =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{maxit=}\DecValTok{10000}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+which we then input into the function \texttt{dew()} to obtain the
+distribution.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ew =}\StringTok{ }\NormalTok{ew.preBrexit}
+\NormalTok{ew.rnd.preBrexit  =}\StringTok{ }\KeywordTok{dew}\NormalTok{(Krange,r,y,te,s0,}
+\NormalTok{                        ew}\OperatorTok{$}\NormalTok{sigma, ew}\OperatorTok{$}\NormalTok{skew, ew}\OperatorTok{$}\NormalTok{kurt)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Edgeworth expansion (4)}
+
+Repeat the recipe for Brexit \ldots{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{r =}\StringTok{ }\NormalTok{imp_rd[}\DecValTok{2}\NormalTok{]                      }\CommentTok{# domestic interest rate}
+\NormalTok{te=}\StringTok{ }\NormalTok{Tenor                          }\CommentTok{# tenor of the option}
+\NormalTok{y =}\StringTok{ }\NormalTok{rf[}\DecValTok{2}\NormalTok{]                          }\CommentTok{# foreign interest rate}
+\NormalTok{s0=}\StringTok{ }\NormalTok{spot[}\DecValTok{2}\NormalTok{]                        }\CommentTok{# spot exchange rate}
+\NormalTok{call.premium =}\StringTok{ }\NormalTok{Call_Brexit         }\CommentTok{# vector of call premium values}
+\NormalTok{call.strikes =}\StringTok{ }\NormalTok{K_Brexit            }\CommentTok{# vector of corresponding call strikes}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Edgeworth expansion (5)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ew.Brexit =}\StringTok{ }\KeywordTok{extract.ew.density}\NormalTok{(}\DataTypeTok{initial.values =} \KeywordTok{rep}\NormalTok{(}\OtherTok{NA}\NormalTok{,}\DecValTok{2}\NormalTok{), }
+                    \DataTypeTok{r=}\NormalTok{r, }\DataTypeTok{y=}\NormalTok{y, }\DataTypeTok{te=}\NormalTok{te, }\DataTypeTok{s0=}\NormalTok{s0, }
+                    \DataTypeTok{market.calls=}\NormalTok{call.premium, }
+                    \DataTypeTok{call.strikes =}\NormalTok{ call.strikes, }
+                    \DataTypeTok{call.weights =}\DecValTok{1}\NormalTok{, }\DataTypeTok{lambda=}\DecValTok{1}\NormalTok{, }\DataTypeTok{hessian.flag=}\NormalTok{F,}
+                    \DataTypeTok{cl =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{maxit=}\DecValTok{10000}\NormalTok{))}
+\NormalTok{ew =}\StringTok{ }\NormalTok{ew.Brexit}
+\NormalTok{ew.rnd.Brexit  =}\StringTok{ }\KeywordTok{dew}\NormalTok{(Krange,r,y,te,s0,ew}\OperatorTok{$}\NormalTok{sigma, ew}\OperatorTok{$}\NormalTok{skew, ew}\OperatorTok{$}\NormalTok{kurt)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Edgeworth expansion (6)}
+
+And for post-Brexit
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{r =}\StringTok{ }\NormalTok{imp_rd[}\DecValTok{3}\NormalTok{]                    }\CommentTok{# domestic interest rate}
+\NormalTok{te=}\StringTok{ }\NormalTok{Tenor                        }\CommentTok{# tenor of the option}
+\NormalTok{y =}\StringTok{ }\NormalTok{rf[}\DecValTok{3}\NormalTok{]                        }\CommentTok{# foreign interest rate}
+\NormalTok{s0=}\StringTok{ }\NormalTok{spot[}\DecValTok{3}\NormalTok{]                      }\CommentTok{# spot exchange rate}
+\NormalTok{call.premium =}\StringTok{ }\NormalTok{Call_postBrexit   }\CommentTok{# vector of call premium values}
+\NormalTok{call.strikes =}\StringTok{ }\NormalTok{K_postBrexit      }\CommentTok{# vector of corresponding call strikes}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Edgeworth expansion (7)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ew.postBrexit =}\StringTok{ }\KeywordTok{extract.ew.density}\NormalTok{(}\DataTypeTok{initial.values =} \KeywordTok{rep}\NormalTok{(}\OtherTok{NA}\NormalTok{,}\DecValTok{2}\NormalTok{), }
+                    \DataTypeTok{r=}\NormalTok{r, }\DataTypeTok{y=}\NormalTok{y, }\DataTypeTok{te=}\NormalTok{te, }\DataTypeTok{s0=}\NormalTok{s0, }
+                    \DataTypeTok{market.calls=}\NormalTok{call.premium, }
+                    \DataTypeTok{call.strikes =}\NormalTok{ call.strikes, }
+                    \DataTypeTok{call.weights =}\DecValTok{1}\NormalTok{, }\DataTypeTok{lambda=}\DecValTok{1}\NormalTok{, }\DataTypeTok{hessian.flag=}\NormalTok{F,}
+                    \DataTypeTok{cl =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{maxit=}\DecValTok{10000}\NormalTok{))}
+\NormalTok{ew =}\StringTok{ }\NormalTok{ew.postBrexit}
+\NormalTok{ew.rnd.postBrexit  =}\StringTok{ }\KeywordTok{dew}\NormalTok{(Krange,r,y,te,s0,ew}\OperatorTok{$}\NormalTok{sigma, ew}\OperatorTok{$}\NormalTok{skew, ew}\OperatorTok{$}\NormalTok{kurt)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Edgeworth expansion (8)}
+
+Produce a pretty chart
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ew.rnd.df =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(Krange, ew.rnd.preBrexit, }
+\NormalTok{                       ew.rnd.Brexit, ew.rnd.postBrexit)}
+
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data=}\NormalTok{ew.rnd.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Krange)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y=}\NormalTok{ew.rnd.preBrexit), }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y=}\NormalTok{ew.rnd.Brexit), }\DataTypeTok{col=}\StringTok{"darkcyan"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y=}\NormalTok{ew.rnd.postBrexit), }\DataTypeTok{col=}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{1}\NormalTok{], }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{2}\NormalTok{], }\DataTypeTok{col=}\StringTok{"darkcyan"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{3}\NormalTok{], }\DataTypeTok{col=}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_hline}\NormalTok{(}\DataTypeTok{yintercept=}\DecValTok{0}\NormalTok{, }\DataTypeTok{col=}\StringTok{"black"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{0.5}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\StringTok{"GBPUSD"}\NormalTok{, }\DataTypeTok{y=}\StringTok{"3-month risk-neutral density"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}{Edgeworth expansion (9)}
+
+\begin{figure}
+\includegraphics[width=1\linewidth]{2018_02_07_IMF_FXCourse_files/figure-beamer/unnamed-chunk-67-1} \caption{Edgeworth expansion risk neutral distributions. Pre-Brexit: red; Brexit: cyan; post-Brexit: blue}\label{fig:unnamed-chunk-67}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{}
+
+\color{blue} \LARGE{Part F:}\\
+\LARGE{Extracting Risk-Neutral Densities}\\
+\Large{Shimko method}
+
+\end{frame}
+
+\begin{frame}[fragile]{Shimko method (1)}
+
+\begin{itemize}
+\tightlist
+\item
+  Nonparametric method
+\item
+  Implemented in package \texttt{RND}
+\item
+  Method requires a volatility smile in the \(\sigma\) - \(K\) space
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Shimko method (2)}
+
+Construct the volatility smile in the \(\sigma\) - \(K\) in the Brexit
+period
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vol.preBrexit =}\StringTok{ }\NormalTok{vol.data[}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{,}\DecValTok{3}\NormalTok{]         }\CommentTok{# obtain implied volatility}
+\NormalTok{delta.shimko =}\StringTok{ }\NormalTok{vol.data[}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{,}\DecValTok{1}\NormalTok{]          }\CommentTok{# obtain the deltas}
+
+\CommentTok{# Calculate the strike prices corresponding to the observed deltas}
+
+\NormalTok{Kshimko_preBrexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(get.strike,vol.preBrexit, }
+\NormalTok{                           delta.shimko, }\DataTypeTok{S0=}\NormalTok{spot[}\DecValTok{1}\NormalTok{], }
+                           \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{1}\NormalTok{], }\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{1}\NormalTok{], }\DataTypeTok{Tenor=}\FloatTok{0.25}\NormalTok{)}
+
+\CommentTok{# Calculate the call premium}
+
+\NormalTok{shimko_preBrexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, Kshimko_preBrexit, }
+\NormalTok{                          vol.preBrexit,}\DataTypeTok{S=}\NormalTok{spot[}\DecValTok{1}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}
+                          \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{1}\NormalTok{],}\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{1}\NormalTok{],}\DataTypeTok{option_type=}\StringTok{"c"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Shimko method (3)}
+
+The function in the \texttt{RND} package that calculates the parameters
+of the Shimko's quadratic approximation to the volatility smile is
+\texttt{extract.shimko.density()}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Inputs for extract.shimko.density()}
+
+\NormalTok{r =}\StringTok{ }\NormalTok{imp_rd[}\DecValTok{1}\NormalTok{]                      }\CommentTok{# implied doomestic rate}
+\NormalTok{te=}\StringTok{ }\NormalTok{Tenor                          }\CommentTok{# time to  maturity}
+\NormalTok{y =}\StringTok{ }\NormalTok{rf[}\DecValTok{1}\NormalTok{]                          }\CommentTok{# foreign interest rate}
+\NormalTok{s0=}\StringTok{ }\NormalTok{spot[}\DecValTok{1}\NormalTok{]                        }\CommentTok{# spot exchange rate}
+\NormalTok{call.premium =}\StringTok{ }\NormalTok{shimko_preBrexit    }\CommentTok{# call premia values}
+\NormalTok{call.strikes =}\StringTok{ }\NormalTok{Kshimko_preBrexit   }\CommentTok{# option strikes}
+\NormalTok{b=r}\OperatorTok{-}\NormalTok{y}
+
+\NormalTok{shimko.preBrexit =}\StringTok{ }\KeywordTok{extract.shimko.density}\NormalTok{(}\DataTypeTok{market.calls=}\NormalTok{call.premium, }
+                                          \DataTypeTok{call.strikes =}\NormalTok{ call.strikes,}
+                                          \DataTypeTok{r=}\NormalTok{r, }\DataTypeTok{y=}\NormalTok{b, }\DataTypeTok{t=}\NormalTok{te, }\DataTypeTok{s0=}\NormalTok{s0, }
+                                          \DataTypeTok{lower=}\DecValTok{0}\NormalTok{, }\DataTypeTok{upper=} \DecValTok{30}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Shimko method (4)}
+
+The parameters are then fed to the function \texttt{dshimko()} to obtain
+the risk neutral distribution for a wider range of strikes,
+\texttt{Krange}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{shimko =}\StringTok{ }\NormalTok{shimko.preBrexit  }
+
+\NormalTok{shimko.rnd.preBrexit =}\StringTok{ }\KeywordTok{dshimko}\NormalTok{(}\DataTypeTok{r=}\NormalTok{r, }\DataTypeTok{te=}\NormalTok{Tenor, }
+                               \DataTypeTok{s0=}\NormalTok{s0, }\DataTypeTok{k=}\NormalTok{Krange, }\DataTypeTok{y=}\NormalTok{y,}
+                               \DataTypeTok{a0=}\NormalTok{shimko[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{a0, }\DataTypeTok{a1=}\NormalTok{shimko[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{a1, }
+                               \DataTypeTok{a2=}\NormalTok{shimko[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{a2)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Shimko method (5)}
+
+Repeat for Brexit
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vol.Brexit =}\StringTok{ }\NormalTok{vol.data[}\DecValTok{6}\OperatorTok{:}\DecValTok{10}\NormalTok{,}\DecValTok{3}\NormalTok{]         }\CommentTok{# obtain implied volatility}
+
+\NormalTok{Kshimko_Brexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(get.strike,vol.Brexit, }
+\NormalTok{                        delta.shimko,}\DataTypeTok{S0=}\NormalTok{spot[}\DecValTok{2}\NormalTok{], }
+                        \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{2}\NormalTok{], }\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{2}\NormalTok{], }\DataTypeTok{Tenor=}\FloatTok{0.25}\NormalTok{)}
+
+\NormalTok{shimko_Brexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, Kshimko_Brexit, }
+\NormalTok{                       vol.Brexit,}\DataTypeTok{S=}\NormalTok{spot[}\DecValTok{2}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}
+                       \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{2}\NormalTok{],}\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{2}\NormalTok{],}\DataTypeTok{option_type=}\StringTok{"c"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Shimko method (6)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{r =}\StringTok{ }\NormalTok{imp_rd[}\DecValTok{2}\NormalTok{]}
+\NormalTok{y =}\StringTok{ }\NormalTok{rf[}\DecValTok{2}\NormalTok{]}
+\NormalTok{s0=}\StringTok{ }\NormalTok{spot[}\DecValTok{2}\NormalTok{]}
+\NormalTok{call.premium =}\StringTok{ }\NormalTok{shimko_Brexit}
+\NormalTok{call.strikes =}\StringTok{ }\NormalTok{Kshimko_Brexit}
+\NormalTok{b=r}\OperatorTok{-}\NormalTok{y}
+
+\NormalTok{shimko.Brexit =}\StringTok{ }\KeywordTok{extract.shimko.density}\NormalTok{(}\DataTypeTok{market.calls=}\NormalTok{call.premium, }
+                                       \DataTypeTok{call.strikes =}\NormalTok{ call.strikes,}
+                                       \DataTypeTok{r=}\NormalTok{r, }\DataTypeTok{y=}\NormalTok{b, }\DataTypeTok{t=}\NormalTok{te, }\DataTypeTok{s0=}\NormalTok{s0, }
+                                       \DataTypeTok{lower=}\DecValTok{0}\NormalTok{, }\DataTypeTok{upper=} \DecValTok{30}\NormalTok{)}
+
+\NormalTok{shimko =}\StringTok{ }\NormalTok{shimko.Brexit}
+\NormalTok{shimko.rnd.Brexit =}\StringTok{ }\KeywordTok{dshimko}\NormalTok{(}\DataTypeTok{r=}\NormalTok{r, }\DataTypeTok{te=}\NormalTok{Tenor, }\DataTypeTok{s0=}\NormalTok{s0, }\DataTypeTok{k=}\NormalTok{Krange, }\DataTypeTok{y=}\NormalTok{y,}
+                            \DataTypeTok{a0=}\NormalTok{shimko[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{a0, }\DataTypeTok{a1=}\NormalTok{shimko[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{a1, }
+                            \DataTypeTok{a2=}\NormalTok{shimko[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{a2)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Shimko method (7)}
+
+Once more for post-Brexit
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vol.postBrexit =}\StringTok{ }\NormalTok{vol.data[}\DecValTok{11}\OperatorTok{:}\DecValTok{15}\NormalTok{,}\DecValTok{3}\NormalTok{]         }\CommentTok{# obtain implied volatility}
+
+\NormalTok{Kshimko_postBrexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(get.strike,vol.postBrexit, }
+\NormalTok{                        delta.shimko,}\DataTypeTok{S0=}\NormalTok{spot[}\DecValTok{3}\NormalTok{], }
+                        \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{3}\NormalTok{], }\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{3}\NormalTok{], }\DataTypeTok{Tenor=}\FloatTok{0.25}\NormalTok{)}
+
+\NormalTok{shimko_postBrexit =}\StringTok{ }\KeywordTok{mapply}\NormalTok{(GKoption.premium, Kshimko_postBrexit, }
+\NormalTok{                       vol.postBrexit,}\DataTypeTok{S=}\NormalTok{spot[}\DecValTok{3}\NormalTok{],}\DataTypeTok{Tenor=}\NormalTok{Tenor,}
+                       \DataTypeTok{fwd=}\NormalTok{forward[}\DecValTok{3}\NormalTok{],}\DataTypeTok{rf=}\NormalTok{rf[}\DecValTok{3}\NormalTok{],}\DataTypeTok{option_type=}\StringTok{"c"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Shimko method (8)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{r =}\StringTok{ }\NormalTok{imp_rd[}\DecValTok{3}\NormalTok{]}
+\NormalTok{y =}\StringTok{ }\NormalTok{rf[}\DecValTok{3}\NormalTok{]}
+\NormalTok{s0=}\StringTok{ }\NormalTok{spot[}\DecValTok{3}\NormalTok{]}
+\NormalTok{call.premium =}\StringTok{ }\NormalTok{shimko_postBrexit}
+\NormalTok{call.strikes =}\StringTok{ }\NormalTok{Kshimko_postBrexit}
+\NormalTok{b=r}\OperatorTok{-}\NormalTok{y}
+
+\NormalTok{shimko.postBrexit =}\StringTok{ }\KeywordTok{extract.shimko.density}\NormalTok{(}\DataTypeTok{market.calls=}\NormalTok{call.premium, }
+                                       \DataTypeTok{call.strikes =}\NormalTok{ call.strikes,}
+                                       \DataTypeTok{r=}\NormalTok{r, }\DataTypeTok{y=}\NormalTok{b, }\DataTypeTok{t=}\NormalTok{te, }\DataTypeTok{s0=}\NormalTok{s0, }
+                                       \DataTypeTok{lower=}\DecValTok{0}\NormalTok{, }\DataTypeTok{upper=} \DecValTok{30}\NormalTok{)}
+
+\NormalTok{shimko =}\StringTok{ }\NormalTok{shimko.postBrexit}
+\NormalTok{shimko.rnd.postBrexit =}\StringTok{ }\KeywordTok{dshimko}\NormalTok{(}\DataTypeTok{r=}\NormalTok{r, }\DataTypeTok{te=}\NormalTok{Tenor, }\DataTypeTok{s0=}\NormalTok{s0, }\DataTypeTok{k=}\NormalTok{Krange, }\DataTypeTok{y=}\NormalTok{y,}
+                            \DataTypeTok{a0=}\NormalTok{shimko[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{a0, }\DataTypeTok{a1=}\NormalTok{shimko[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{a1, }
+                            \DataTypeTok{a2=}\NormalTok{shimko[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{a2)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{Shimko method (9)}
+
+Fun part: plots
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{shimko.rnd.df =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(Krange,shimko.rnd.preBrexit, }
+\NormalTok{                           shimko.rnd.Brexit, shimko.rnd.postBrexit)}
+
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data=}\NormalTok{shimko.rnd.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Krange)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y=}\NormalTok{shimko.rnd.preBrexit), }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y=}\NormalTok{shimko.rnd.Brexit), }\DataTypeTok{col=}\StringTok{"darkcyan"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.5}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y=}\NormalTok{shimko.rnd.postBrexit), }\DataTypeTok{col=}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{1}\NormalTok{], }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{2}\NormalTok{], }\DataTypeTok{col=}\StringTok{"darkcyan"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =}\NormalTok{ spot[}\DecValTok{3}\NormalTok{], }\DataTypeTok{col=}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{linetype=}\StringTok{"longdash"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_hline}\NormalTok{(}\DataTypeTok{yintercept=}\DecValTok{0}\NormalTok{, }\DataTypeTok{col=}\StringTok{"black"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{0.5}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\StringTok{"GBPUSD"}\NormalTok{, }\DataTypeTok{y=}\StringTok{"3-month risk-neutral density"}\NormalTok{)   }
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}{Shimko method (10)}
+
+\begin{figure}
+\includegraphics[width=1\linewidth]{2018_02_07_IMF_FXCourse_files/figure-beamer/unnamed-chunk-76-1} \caption{Shimko risk neutral distributions. Pre-Brexit: red; Brexit: cyan; post-Brexit: blue}\label{fig:unnamed-chunk-76}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{}
+
+\color{blue} \LARGE{Part G:}\\
+\LARGE{Comparing distributions}
+
+\end{frame}
+
+\begin{frame}[fragile]{Pre-Brexit (1)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data=}\NormalTok{shimko.rnd.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Krange)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y=}\NormalTok{shimko.rnd.preBrexit), }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{data=}\NormalTok{gb.rnd.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Krange, }\DataTypeTok{y=}\NormalTok{gb.rnd.preBrexit), }
+            \DataTypeTok{col=}\StringTok{"darkcyan"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{data=}\NormalTok{ew.rnd.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Krange, }\DataTypeTok{y=}\NormalTok{ew.rnd.preBrexit), }
+            \DataTypeTok{col=}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_hline}\NormalTok{(}\DataTypeTok{yintercept=}\DecValTok{0}\NormalTok{, }\DataTypeTok{col=}\StringTok{"black"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{0.5}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\StringTok{"GBPUSD"}\NormalTok{, }\DataTypeTok{y=}\StringTok{"3-month risk-neutral density"}\NormalTok{)   }
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}{Pre-Brexit (2)}
+
+\begin{figure}
+\includegraphics[width=1\linewidth]{2018_02_07_IMF_FXCourse_files/figure-beamer/unnamed-chunk-78-1} \caption{Pre-Brexit risk neutral distributions. Generalized beta: cyan; Edgeworth expansion: blue; Shimko: red.}\label{fig:unnamed-chunk-78}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}[fragile]{Brexit (1)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data=}\NormalTok{shimko.rnd.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Krange)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y=}\NormalTok{shimko.rnd.Brexit), }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{data=}\NormalTok{gb.rnd.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Krange, }\DataTypeTok{y=}\NormalTok{gb.rnd.Brexit), }
+            \DataTypeTok{col=}\StringTok{"darkcyan"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{data=}\NormalTok{ew.rnd.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Krange, }\DataTypeTok{y=}\NormalTok{ew.rnd.Brexit), }
+            \DataTypeTok{col=}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_hline}\NormalTok{(}\DataTypeTok{yintercept=}\DecValTok{0}\NormalTok{, }\DataTypeTok{col=}\StringTok{"black"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{0.5}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\StringTok{"GBPUSD"}\NormalTok{, }\DataTypeTok{y=}\StringTok{"3-month risk-neutral density"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}{Brexit (2)}
+
+\begin{figure}
+\includegraphics[width=1\linewidth]{2018_02_07_IMF_FXCourse_files/figure-beamer/unnamed-chunk-80-1} \caption{Brexit risk neutral distributions. Generalized beta: cyan; Edgeworth expansion: blue; Shimko: red.}\label{fig:unnamed-chunk-80}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}[fragile]{Post-Brexit (1)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data=}\NormalTok{shimko.rnd.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Krange)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y=}\NormalTok{shimko.rnd.postBrexit), }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{data=}\NormalTok{gb.rnd.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Krange, }\DataTypeTok{y=}\NormalTok{gb.rnd.postBrexit), }
+            \DataTypeTok{col=}\StringTok{"darkcyan"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{data=}\NormalTok{ew.rnd.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Krange, }\DataTypeTok{y=}\NormalTok{ew.rnd.postBrexit), }
+            \DataTypeTok{col=}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{1.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_hline}\NormalTok{(}\DataTypeTok{yintercept=}\DecValTok{0}\NormalTok{, }\DataTypeTok{col=}\StringTok{"black"}\NormalTok{, }\DataTypeTok{size=}\FloatTok{0.5}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\StringTok{"GBPUSD"}\NormalTok{, }\DataTypeTok{y=}\StringTok{"3-month risk-neutral density"}\NormalTok{)   }
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}{Post-Brexit(2)}
+
+\begin{figure}
+\includegraphics[width=1\linewidth]{2018_02_07_IMF_FXCourse_files/figure-beamer/unnamed-chunk-82-1} \caption{Post-Brexit risk neutral distributions. Generalized beta: cyan; Edgeworth expansion: blue.}\label{fig:unnamed-chunk-82}
 \end{figure}
 
 \end{frame}

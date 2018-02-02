@@ -425,7 +425,6 @@ Implied volatility
 \
 \LARGE{The Volatility Smile}
 
-
 # Finding vols for different $\Delta$s
 
 - For a given $\Delta$ we have prices for:
@@ -458,7 +457,7 @@ include_graphics("images/figRRLevel.png")
 include_graphics("images/figRRSlope.png")
 ```
 
-# The slope of the smile: the butterfly spread
+# The curvature of the smile: the butterfly spread
 
 ```{r echo=FALSE, out.width="100%"}
 include_graphics("images/figRRCurvature.png")
@@ -559,7 +558,7 @@ this.data$sigmaatm = atm
 Tenor = 3/12   # Maturity of options, 3 months, in years
 ```
 
-# What is the $ATM$ strike?
+# What is the proper $ATM$ strike?
 
 - Retail products
 \[
@@ -710,7 +709,20 @@ ggplot(data = smile.data, aes(x=Delta, y=value, colour=variable)) +
 \
 \LARGE{Extracting Risk-Neutral Densities}
 
-# Market views are risk-neutral, not objective
+# Market views are not forecasts
+
+Market views
+
+- They are not forecast of the real-world FX distribution
+- Market prices weigh risk aversion of 
+    + hedgers
+    + speculators
+    + market makers
+- "Technical" factors may affect weight of events
+- Risk-neutral, weighting expectations and risk aversion
+    + Not easy to disentangle them 
+
+
 
 # Extraction methods
 
@@ -768,7 +780,6 @@ C^F(K) = \exp(-R_d\times T) \int_{K}^{\infty} \left( S_T - K\right) dF(S_T; \Lam
 \LARGE{Extracting Risk-Neutral Densities}
 \
 \Large{Constructing option premium functions}
-
 
 # Constructing the market call function (1)
 
@@ -1071,7 +1082,7 @@ gb.rnd.postBrexit = dgb(Krange,gb$a, gb$b, gb$v, gb$w)
 
 ```
 
-# Generalized Beta Density (8)   
+# Generalized Beta Density (9)   
 
 ```{r echo=TRUE, out.width="100%", fig.asp=0.6, fig.cap = "Generalized beta risk neutral distributions.</br>Pre-Brexit: red; Brexit: cyan; post-Brexit: blue", eval=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
@@ -1090,9 +1101,9 @@ ggplot(data=gb.rnd.df, aes(x=Krange)) +
 
 ```
 
-# Generalized Beta Density (9)   
+# Generalized Beta Density (10)   
 
-```{r echo=FALSE, out.width="100%", fig.asp=0.4, fig.cap = "Generalized beta risk neutral distributions.</br>Pre-Brexit: red; Brexit: cyan; post-Brexit: blue", eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r echo=FALSE, out.width="100%", fig.asp=0.4, fig.cap = "Generalized beta risk neutral distributions. Pre-Brexit: red; Brexit: cyan; post-Brexit: blue", eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
 gb.rnd.df = data.frame(Krange,gb.rnd.preBrexit, 
                        gb.rnd.Brexit, gb.rnd.postBrexit)
@@ -1109,3 +1120,443 @@ ggplot(data=gb.rnd.df, aes(x=Krange)) +
 
 ```
 
+#
+
+\color{blue}
+\LARGE{Part F:}
+\
+\LARGE{Extracting Risk-Neutral Densities}
+\
+\Large{Edgeworth expansion}
+
+# Edgeworth expansion (1)
+
+- Semi-parametric method
+- Implemented in package `RND`
+- Requires as inputs
+    + call premia and strike range
+    + spot rate
+    + implied domestic interest rate
+    + option tenor
+    
+# Edgeworth expansion (2)  
+    
+Calculations in Brexit period
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
+
+r = imp_rd[1]                      # domestic interest rate
+te= Tenor                          # tenor of the option
+y = rf[1]                          # foreign interest rate
+s0= spot[1]                        # spot exchange rate
+call.premium = Call_preBrexit      # vector of call premium values
+call.strikes = K_preBrexit         # vector of corresponding call strikes
+```
+
+# Edgeworth expansion (3)  
+
+The function `extract.ew.density()` calculates the parameters of the Edgeworth expansion:
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
+ew.preBrexit = extract.ew.density(initial.values = rep(NA,2), 
+                       r=r, y=y, te=te, s0=s0, 
+                       market.calls=call.premium, 
+                       call.strikes = call.strikes, 
+                       call.weights =1, lambda=1, hessian.flag=F, 
+                       cl = list(maxit=10000))
+```
+
+which we then input into the function `dew()` to obtain the distribution.
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
+ew = ew.preBrexit
+ew.rnd.preBrexit  = dew(Krange,r,y,te,s0,
+                        ew$sigma, ew$skew, ew$kurt)
+```
+
+# Edgeworth expansion (4)  
+Repeat the recipe for Brexit ...
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
+
+r = imp_rd[2]                      # domestic interest rate
+te= Tenor                          # tenor of the option
+y = rf[2]                          # foreign interest rate
+s0= spot[2]                        # spot exchange rate
+call.premium = Call_Brexit         # vector of call premium values
+call.strikes = K_Brexit            # vector of corresponding call strikes
+```
+
+# Edgeworth expansion (5)  
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
+ew.Brexit = extract.ew.density(initial.values = rep(NA,2), 
+                    r=r, y=y, te=te, s0=s0, 
+                    market.calls=call.premium, 
+                    call.strikes = call.strikes, 
+                    call.weights =1, lambda=1, hessian.flag=F,
+                    cl = list(maxit=10000))
+ew = ew.Brexit
+ew.rnd.Brexit  = dew(Krange,r,y,te,s0,ew$sigma, ew$skew, ew$kurt)
+```
+
+# Edgeworth expansion (6)  
+
+And for post-Brexit
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
+
+r = imp_rd[3]                    # domestic interest rate
+te= Tenor                        # tenor of the option
+y = rf[3]                        # foreign interest rate
+s0= spot[3]                      # spot exchange rate
+call.premium = Call_postBrexit   # vector of call premium values
+call.strikes = K_postBrexit      # vector of corresponding call strikes
+```
+
+# Edgeworth expansion (7)  
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
+ew.postBrexit = extract.ew.density(initial.values = rep(NA,2), 
+                    r=r, y=y, te=te, s0=s0, 
+                    market.calls=call.premium, 
+                    call.strikes = call.strikes, 
+                    call.weights =1, lambda=1, hessian.flag=F,
+                    cl = list(maxit=10000))
+ew = ew.postBrexit
+ew.rnd.postBrexit  = dew(Krange,r,y,te,s0,ew$sigma, ew$skew, ew$kurt)
+```
+
+# Edgeworth expansion (8)  
+
+Produce a pretty chart
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.4, fig.cap = "Edgeworth expansion risk neutral distributions.</br>Pre-Brexit: red; Brexit: cyan; post-Brexit: blue",eval=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+ew.rnd.df = data.frame(Krange, ew.rnd.preBrexit, 
+                       ew.rnd.Brexit, ew.rnd.postBrexit)
+
+ggplot(data=ew.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=ew.rnd.preBrexit), col="red", size=1.25) +
+  geom_line(aes(y=ew.rnd.Brexit), col="darkcyan", size=1.25) +
+  geom_line(aes(y=ew.rnd.postBrexit), col="blue", size=1.25) +
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  geom_vline(xintercept = spot[3], col="blue", linetype="longdash") +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density") 
+```
+
+# Edgeworth expansion (9)  
+
+```{r echo=FALSE, out.width="100%", fig.asp=0.4, fig.cap = "Edgeworth expansion risk neutral distributions. Pre-Brexit: red; Brexit: cyan; post-Brexit: blue",eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+ew.rnd.df = data.frame(Krange, ew.rnd.preBrexit, 
+                       ew.rnd.Brexit, ew.rnd.postBrexit)
+
+ggplot(data=ew.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=ew.rnd.preBrexit), col="red", size=1.25) +
+  geom_line(aes(y=ew.rnd.Brexit), col="darkcyan", size=1.25) +
+  geom_line(aes(y=ew.rnd.postBrexit), col="blue", size=1.25) +
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  geom_vline(xintercept = spot[3], col="blue", linetype="longdash") +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density") 
+```
+
+
+#
+\color{blue}
+\LARGE{Part F:}
+\
+\LARGE{Extracting Risk-Neutral Densities}
+\
+\Large{Shimko method}
+
+# Shimko method (1)
+
+- Nonparametric method
+- Implemented in package `RND`
+- Method requires a volatility smile in the  $\sigma$ - $K$ space
+
+# Shimko method (2)
+
+Construct the volatility smile in the $\sigma$ - $K$ in the Brexit period
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+vol.preBrexit = vol.data[1:5,3]         # obtain implied volatility
+delta.shimko = vol.data[1:5,1]          # obtain the deltas
+
+# Calculate the strike prices corresponding to the observed deltas
+
+Kshimko_preBrexit = mapply(get.strike,vol.preBrexit, 
+                           delta.shimko, S0=spot[1], 
+                           fwd=forward[1], rf=rf[1], Tenor=0.25)
+
+# Calculate the call premium
+
+shimko_preBrexit = mapply(GKoption.premium, Kshimko_preBrexit, 
+                          vol.preBrexit,S=spot[1],Tenor=Tenor,
+                          fwd=forward[1],rf=rf[1],option_type="c")
+```
+
+# Shimko method (3)
+
+The function in the `RND` package that calculates the parameters of the Shimko's quadratic approximation to the volatility smile is `extract.shimko.density()`:
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+# Inputs for extract.shimko.density()
+
+r = imp_rd[1]                      # implied doomestic rate
+te= Tenor                          # time to  maturity
+y = rf[1]                          # foreign interest rate
+s0= spot[1]                        # spot exchange rate
+call.premium = shimko_preBrexit    # call premia values
+call.strikes = Kshimko_preBrexit   # option strikes
+b=r-y
+
+shimko.preBrexit = extract.shimko.density(market.calls=call.premium, 
+                                          call.strikes = call.strikes,
+                                          r=r, y=b, t=te, s0=s0, 
+                                          lower=0, upper= 30)
+
+```
+
+
+# Shimko method (4)
+
+The parameters are then fed to the function `dshimko()` to obtain the risk neutral distribution for a wider range of strikes, `Krange`:
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+shimko = shimko.preBrexit  
+
+shimko.rnd.preBrexit = dshimko(r=r, te=Tenor, 
+                               s0=s0, k=Krange, y=y,
+                               a0=shimko[[1]]$a0, a1=shimko[[1]]$a1, 
+                               a2=shimko[[1]]$a2)
+```
+
+# Shimko method (5)
+
+Repeat for Brexit
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+vol.Brexit = vol.data[6:10,3]         # obtain implied volatility
+
+Kshimko_Brexit = mapply(get.strike,vol.Brexit, 
+                        delta.shimko,S0=spot[2], 
+                        fwd=forward[2], rf=rf[2], Tenor=0.25)
+
+shimko_Brexit = mapply(GKoption.premium, Kshimko_Brexit, 
+                       vol.Brexit,S=spot[2],Tenor=Tenor,
+                       fwd=forward[2],rf=rf[2],option_type="c")
+```
+
+# Shimko method (6)
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+r = imp_rd[2]
+y = rf[2]
+s0= spot[2]
+call.premium = shimko_Brexit
+call.strikes = Kshimko_Brexit
+b=r-y
+
+shimko.Brexit = extract.shimko.density(market.calls=call.premium, 
+                                       call.strikes = call.strikes,
+                                       r=r, y=b, t=te, s0=s0, 
+                                       lower=0, upper= 30)
+
+shimko = shimko.Brexit
+shimko.rnd.Brexit = dshimko(r=r, te=Tenor, s0=s0, k=Krange, y=y,
+                            a0=shimko[[1]]$a0, a1=shimko[[1]]$a1, 
+                            a2=shimko[[1]]$a2)
+
+```
+
+# Shimko method (7)
+
+Once more for post-Brexit
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+vol.postBrexit = vol.data[11:15,3]         # obtain implied volatility
+
+Kshimko_postBrexit = mapply(get.strike,vol.postBrexit, 
+                        delta.shimko,S0=spot[3], 
+                        fwd=forward[3], rf=rf[3], Tenor=0.25)
+
+shimko_postBrexit = mapply(GKoption.premium, Kshimko_postBrexit, 
+                       vol.postBrexit,S=spot[3],Tenor=Tenor,
+                       fwd=forward[3],rf=rf[3],option_type="c")
+```
+
+# Shimko method (8)
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+r = imp_rd[3]
+y = rf[3]
+s0= spot[3]
+call.premium = shimko_postBrexit
+call.strikes = Kshimko_postBrexit
+b=r-y
+
+shimko.postBrexit = extract.shimko.density(market.calls=call.premium, 
+                                       call.strikes = call.strikes,
+                                       r=r, y=b, t=te, s0=s0, 
+                                       lower=0, upper= 30)
+
+shimko = shimko.postBrexit
+shimko.rnd.postBrexit = dshimko(r=r, te=Tenor, s0=s0, k=Krange, y=y,
+                            a0=shimko[[1]]$a0, a1=shimko[[1]]$a1, 
+                            a2=shimko[[1]]$a2)
+
+```
+
+# Shimko method (9)
+
+Fun part: plots
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.4, eval=FALSE, fig.cap = "Shimnko risk neutral distributions.</br>Pre-Brexit: red; Brexit: cyan; post-Brexit: blue", message=FALSE, warning=FALSE, paged.print=FALSE}
+
+shimko.rnd.df = data.frame(Krange,shimko.rnd.preBrexit, 
+                           shimko.rnd.Brexit, shimko.rnd.postBrexit)
+
+ggplot(data=shimko.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=shimko.rnd.preBrexit), col="red", size=1.25) +
+  geom_line(aes(y=shimko.rnd.Brexit), col="darkcyan", size=1.5) +
+  geom_line(aes(y=shimko.rnd.postBrexit), col="blue", size=1.25) +
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  geom_vline(xintercept = spot[3], col="blue", linetype="longdash") +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density")   
+
+```
+
+# Shimko method (10)
+
+```{r echo=FALSE, out.width="100%", fig.asp=0.4, eval=TRUE, fig.cap = "Shimko risk neutral distributions. Pre-Brexit: red; Brexit: cyan; post-Brexit: blue", message=FALSE, warning=FALSE, paged.print=FALSE}
+
+shimko.rnd.df = data.frame(Krange,shimko.rnd.preBrexit, 
+                           shimko.rnd.Brexit, shimko.rnd.postBrexit)
+
+ggplot(data=shimko.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=shimko.rnd.preBrexit), col="red", size=1.25) +
+  geom_line(aes(y=shimko.rnd.Brexit), col="darkcyan", size=1.5) +
+  geom_line(aes(y=shimko.rnd.postBrexit), col="blue", size=1.25) +
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  geom_vline(xintercept = spot[3], col="blue", linetype="longdash") +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density")   
+
+```
+
+
+
+
+#
+\color{blue}
+\LARGE{Part G:}
+\
+\LARGE{Comparing distributions}
+
+
+# Pre-Brexit (1)
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, fig.cap = "Pre-Brexit risk neutral distributions. Generalized beta: cyan; Edgeworth expansion: blue; Shimko: red.", eval=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+ggplot(data=shimko.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=shimko.rnd.preBrexit), col="red", size=1.25) +
+  geom_line(data=gb.rnd.df, aes(x=Krange, y=gb.rnd.preBrexit), 
+            col="darkcyan", size=1.25) +
+  geom_line(data=ew.rnd.df, aes(x=Krange, y=ew.rnd.preBrexit), 
+            col="blue", size=1.25) +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density")   
+
+```
+
+# Pre-Brexit (2)
+
+```{r echo=FALSE, out.width="100%", fig.asp=0.4, fig.cap = "Pre-Brexit risk neutral distributions. Generalized beta: cyan; Edgeworth expansion: blue; Shimko: red.", eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+ggplot(data=shimko.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=shimko.rnd.preBrexit), col="red", size=1.25) +
+  geom_line(data=gb.rnd.df, aes(x=Krange, y=gb.rnd.preBrexit), 
+            col="darkcyan", size=1.25) +
+  geom_line(data=ew.rnd.df, aes(x=Krange, y=ew.rnd.preBrexit), 
+            col="blue", size=1.25) +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density")   
+
+```
+
+# Brexit (1)
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, fig.cap = "Brexit risk neutral distributions. Generalized beta: cyan; Edgeworth expansion: blue; Shimko: red.", eval=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+ggplot(data=shimko.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=shimko.rnd.Brexit), col="red", size=1.25) +
+  geom_line(data=gb.rnd.df, aes(x=Krange, y=gb.rnd.Brexit), 
+            col="darkcyan", size=1.25) +
+  geom_line(data=ew.rnd.df, aes(x=Krange, y=ew.rnd.Brexit), 
+            col="blue", size=1.25) +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density") 
+
+```
+
+# Brexit (2)
+
+```{r echo=FALSE, out.width="100%", fig.asp=0.4, fig.cap = "Brexit risk neutral distributions. Generalized beta: cyan; Edgeworth expansion: blue; Shimko: red.", eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+ggplot(data=shimko.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=shimko.rnd.Brexit), col="red", size=1.25) +
+  geom_line(data=gb.rnd.df, aes(x=Krange, y=gb.rnd.Brexit), 
+            col="darkcyan", size=1.25) +
+  geom_line(data=ew.rnd.df, aes(x=Krange, y=ew.rnd.Brexit), 
+            col="blue", size=1.25) +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density") 
+
+```
+
+# Post-Brexit (1)
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, fig.cap = "Post-Brexit risk neutral distributions. Generalized beta: cyan; Edgeworth expansion: blue; Shimko: red.", eval=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+ggplot(data=shimko.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=shimko.rnd.postBrexit), col="red", size=1.25) +
+  geom_line(data=gb.rnd.df, aes(x=Krange, y=gb.rnd.postBrexit), 
+            col="darkcyan", size=1.25) +
+  geom_line(data=ew.rnd.df, aes(x=Krange, y=ew.rnd.postBrexit), 
+            col="blue", size=1.25) +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density")   
+```
+
+# Post-Brexit(2)
+
+```{r echo=FALSE, out.width="100%", fig.asp=0.4, fig.cap = "Post-Brexit risk neutral distributions. Generalized beta: cyan; Edgeworth expansion: blue.", eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+ggplot(data=shimko.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=shimko.rnd.postBrexit), col="red", size=1.25) +
+  geom_line(data=gb.rnd.df, aes(x=Krange, y=gb.rnd.postBrexit), 
+            col="darkcyan", size=1.25) +
+  geom_line(data=ew.rnd.df, aes(x=Krange, y=ew.rnd.postBrexit), 
+            col="blue", size=1.25) +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density")   
+```
+
+\color{blue}
+\LARGE{Thank You}
+\
+\LARGE{Have Fun!}
