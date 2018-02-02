@@ -468,7 +468,9 @@ include_graphics("images/figRRCurvature.png")
 \color{blue}
 \LARGE{Part E:}
 \
-\LARGE{Constructing the Volatility Smile: Brexit}
+\LARGE{Constructing the Volatility Smile}
+\ 
+\Large{A Brexit case study}
 
 # Selecting the dates
 
@@ -476,7 +478,7 @@ We are interested in the behavior of the GBPUSD for three dates:
 
 - January 8, 2016 (Pre-Brexit)
 - June 24, 2016   (Brexit)
-- December 1, 2017 (Post-Brexit)
+- December 30, 2016 (Post-Brexit)
 
 # Getting the data (1)
 
@@ -718,11 +720,6 @@ Methods fall under one of three categories:
 - Semiparametric methods
 - Non-parametric methods
 
-All methods require constructing call and/or put functions
-
-- Option premia vs. strike price
-
-
 # Parametric methods
 
 - Specify a parametric distribution function $F$ for the exchange rate
@@ -753,6 +750,16 @@ C^F(K) = \exp(-R_d\times T) \int_{K}^{\infty} \left( S_T - K\right) dF(S_T; \Lam
 \]
 - Use numerical methods to calculate derivative and find risk neutral distribution
 
+# Numerical estimation exercise
+
+- Risk neutral density extraction
+    + Generalized beta density (parametric)
+    + Edgeworth expansion (semi-parametric)
+    + Shimko (non-parametric)
+
+- All methods require constructing call and/or put functions
+    + Option premia vs. strike price
+    
 
 #
 \color{blue}
@@ -935,4 +942,170 @@ ggplot(putstrike.df) + geom_line(aes(x=K_preBrexit,y=Put_preBrexit), col="red", 
 \
 \LARGE{Extracting Risk-Neutral Densities}
 \
-\Large{Using the RND package to generate densities}
+\Large{Generalized Beta Density}
+
+# Generalized Beta Density (1)
+
+- Parametric method
+- Implemented in package `RND`
+- Requires as inputs
+    + call premia and strike range
+    + put premia and strike range
+    + spot rate
+    + implied domestic interest rate
+    + option tenor
+    
+# Generalized Beta Density (2)
+
+Let's start with the pre-Brexit period
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+r = imp_rd[1]                  # domestic interest rate
+te= Tenor                      # tenor of the option
+y = rf[1]                      # foreign interest rate
+s0= spot[1]                    # spot exchange rate
+call.premium = Call_preBrexit  # vector of call premium values
+call.strikes = K_preBrexit     # vector of corresponding call strikes
+put.premium = Put_preBrexit    # vector of put premium values
+put.strikes = K_preBrexit      # vector of corresponding put strikes
+
+```
+
+# Generalized Beta Density (3)    
+
+Extract the parameter distribution using the function `extract.gb.density()`:
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+library(RND)
+gb.preBrexit = extract.gb.density(initial.values=c(NA,NA,NA,NA), 
+                                  r=r, te=te, y=y, s0=s0, 
+                                  market.calls=call.premium, 
+                                  call.strikes = call.strikes, 
+                                  call.weights =1,
+                                  market.puts = put.premium, 
+                                  put.strikes = put.strikes, 
+                                  put.weights = 1,
+                                  lambda=1, hessian.flag=F)
+
+```
+
+# Generalized Beta Density (4)    
+
+Obtain the risk neutral distribution by passing a range of strike prices
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+Krange = seq(0.9*min(K_preBrexit, K_Brexit, K_postBrexit), 
+             1.1*max(K_preBrexit, K_Brexit, K_postBrexit), 
+             0.01)
+```
+
+to the function `dgb()`:
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+gb = gb.preBrexit
+gb.rnd.preBrexit = dgb(Krange,gb$a, gb$b, gb$v, gb$w)
+
+```
+
+# Generalized Beta Density (5)   
+
+Do the same for the Brexit ...
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+r = imp_rd[2]
+y = rf[2]
+s0= spot[2]
+call.premium = Call_Brexit
+call.strikes = K_Brexit
+put.premium = Put_Brexit
+put.strikes = K_Brexit
+```
+
+# Generalized Beta Density (6)   
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+gb.Brexit = extract.gb.density(initial.values=c(NA,NA,NA,NA), 
+                       r=r, te=te, y=y, s0=s0, 
+                       market.calls=call.premium, 
+                       call.strikes = call.strikes, 
+                       call.weights =1,
+                       market.puts = put.premium, 
+                       put.strikes = put.strikes, 
+                       put.weights = 1,  
+                       lambda=1, hessian.flag=F)
+gb = gb.Brexit
+gb.rnd.Brexit = dgb(Krange,gb$a, gb$b, gb$v, gb$w)
+
+```
+
+
+# Generalized Beta Density (7)   
+
+And more of the same for post-Brexit:
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+r = imp_rd[3]
+y = rf[3]
+s0= spot[3]
+call.premium = Call_postBrexit
+call.strikes = K_postBrexit
+put.premium = Put_postBrexit
+put.strikes = K_postBrexit
+```
+
+# Generalized Beta Density (8)   
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+gb.postBrexit = extract.gb.density(initial.values=c(NA,NA,NA,NA), 
+                       r=r, te=te, y=y, s0=s0, 
+                       market.calls=call.premium, 
+                       call.strikes = call.strikes, 
+                       call.weights =1,
+                       market.puts = put.premium, 
+                       put.strikes = put.strikes, 
+                       put.weights = 1,  
+                       lambda=1, hessian.flag=F)
+gb = gb.postBrexit
+gb.rnd.postBrexit = dgb(Krange,gb$a, gb$b, gb$v, gb$w)
+
+```
+
+# Generalized Beta Density (8)   
+
+```{r echo=TRUE, out.width="100%", fig.asp=0.6, fig.cap = "Generalized beta risk neutral distributions.</br>Pre-Brexit: red; Brexit: cyan; post-Brexit: blue", eval=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+gb.rnd.df = data.frame(Krange,gb.rnd.preBrexit, 
+                       gb.rnd.Brexit, gb.rnd.postBrexit)
+
+ggplot(data=gb.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=gb.rnd.preBrexit), col="red", size=1.25) +
+  geom_line(aes(y=gb.rnd.Brexit), col="darkcyan", size=1.25) +
+  geom_line(aes(y=gb.rnd.postBrexit), col="blue", size=1.25) +
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  geom_vline(xintercept = spot[3], col="blue", linetype="longdash") +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density")   
+
+```
+
+# Generalized Beta Density (9)   
+
+```{r echo=FALSE, out.width="100%", fig.asp=0.4, fig.cap = "Generalized beta risk neutral distributions.</br>Pre-Brexit: red; Brexit: cyan; post-Brexit: blue", eval=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+gb.rnd.df = data.frame(Krange,gb.rnd.preBrexit, 
+                       gb.rnd.Brexit, gb.rnd.postBrexit)
+
+ggplot(data=gb.rnd.df, aes(x=Krange)) + 
+  geom_line(aes(y=gb.rnd.preBrexit), col="red", size=1.25) +
+  geom_line(aes(y=gb.rnd.Brexit), col="darkcyan", size=1.25) +
+  geom_line(aes(y=gb.rnd.postBrexit), col="blue", size=1.25) +
+  geom_vline(xintercept = spot[1], col="red", linetype="longdash") + 
+  geom_vline(xintercept = spot[2], col="darkcyan", linetype="longdash") +
+  geom_vline(xintercept = spot[3], col="blue", linetype="longdash") +
+  geom_hline(yintercept=0, col="black", size=0.5) +
+  labs(x="GBPUSD", y="3-month risk-neutral density")   
+
+```
+
